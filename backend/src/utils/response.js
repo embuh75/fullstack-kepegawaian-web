@@ -1,6 +1,8 @@
 const response = {
   success(res, data = null, message = "Berhasil", statusCode = 200) {
-    return res.status(statusCode).json({ success: true, message, data });
+    return res
+      .status(statusCode)
+      .json({ success: true, message, count: data.length, data });
   },
   created(res, data = null, message = "Data berhasil dibuat") {
     return res.status(201).json({ success: true, message, data });

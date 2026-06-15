@@ -2,7 +2,7 @@ const router = require("express").Router();
 const { body } = require("express-validator");
 
 // Middleware & Controller
-const { changePwBodyValidator, loginBodyValidator } = require("../middlewares/validator");
+const { changePwBodyValidator, loginBodyValidator } = require("../utils/validator/bodyValidator");
 const { authenticate } = require("../middlewares/authMiddleware");
 const control = require("../controllers/authController");
 

@@ -15,60 +15,123 @@ const changePwBodyValidator = [
 ];
 
 const createBodyValidator = [
-  body("nama").notEmpty().withMessage("Nama wajib diisi"),
+  body("nama")
+    .notEmpty({ ignore_whitespace: true })
+    .trim()
+    .withMessage("Format {nama} tidak valid"),
   body("noKTP")
-    .notEmpty()
-    .withMessage("Nomor KTP wajib diisi")
+    .notEmpty({ ignore_whitespace: true })
+    .trim()
+    .isNumeric({ no_symbols: true })
+    .withMessage("Format {noKTP} tidak valid (NUMBER)")
     .isLength({ min: 16, max: 16 })
-    .withMessage("Nomor KTP harus 16 digit"),
+    .withMessage("Format {noKTP} tidak valid [min: 16, max: 16]"),
   body("noNBM")
     .optional()
-    .customSanitizer((val) => (val ? val : null))
+    .notEmpty({ ignore_whitespace: true })
+    .trim()
+    .withMessage("Format {noNBM} tidak valid (!NULL)")
+    .isNumeric({ no_symbols: true })
+    .withMessage("Format {noNBM} tidak valid (NUMBER)")
     .isLength({ max: 20 })
-    .withMessage("Nomor NBM maksimal 20 karakter"),
+    .withMessage("Format {noNBM} tidak valid [max: 20]"),
   body("foto")
     .optional()
-    .customSanitizer((val) => (val ? val : null)),
-  body("tempatLahir").notEmpty().withMessage("Tempat lahir wajib diisi"),
+    .notEmpty({ ignore_whitespace: true })
+    .trim()
+    .withMessage("Format {foto} tidak valid"),
+  body("tempatLahir")
+    .optional()
+    .notEmpty({ ignore_whitespace: true })
+    .trim()
+    .withMessage("Format {tempatLahir} tidak valid"),
   body("tanggalLahir")
-    .isISO8601()
-    .withMessage("Format tanggal lahir tidak valid (YYYY-MM-DD)")
-    .customSanitizer((val) => new Date(val)),
+    .notEmpty({ ignore_whitespace: true })
+    .trim()
+    .withMessage("Format {tanggalLahir} tidak valid")
+    .isISO8601({ strict: true })
+    .toDate()
+    .withMessage("Format {tanggalLahir} tidak valid (YYYY-MM-DD)"),
   body("jenisKelamin")
     .notEmpty()
     .isIn(["L", "P"])
-    .withMessage("Jenis kelamin harus L atau P"),
+    .withMessage("Format {jenisKelamin} tidak valid (L/P)"),
   body("status")
     .notEmpty()
     .isIn(["Belum_Menikah", "Menikah"])
-    .withMessage("Isi dengan [Belum_Menikah / Menikah]"),
-  body("alamatRumah").notEmpty().withMessage("Alamat rumah wajib diisi"),
-  body("nomorTelephone").optional(),
-  body("alamatEmail").optional(),
+    .withMessage("Format {status} tidak valid (BELUM_MENIKAH/MENIKAH)"),
+  body("alamatRumah")
+    .notEmpty({ ignore_whitespace: true })
+    .trim()
+    .withMessage("Format {alamatRumah} tidak valid (!NULL)"),
+  body("nomorTelephone")
+    .notEmpty({ ignore_whitespace: true })
+    .trim()
+    .withMessage("Format {nomorTelephone} tidak valid (!NULL)")
+    .isNumeric({ no_symbols: true })
+    .withMessage("Format {nomorTelephone} tidak valid (NUMBER)"),
+  body("alamatEmail")
+    .optional()
+    .notEmpty({ ignore_whitespace: true })
+    .trim()
+    .withMessage("Format {alamatEmail} tidak valid (!NULL)")
+    .isEmail()
+    .withMessage("Format {alamatEmail} tidak valid (EMAIL)"),
   body("pendidikanTerakhir")
     .optional()
-    .customSanitizer((val) => (val ? val : null)),
-  body("namaKampus").optional(),
-  body("jurusan").optional(),
+    .notEmpty()
+    .trim()
+    .withMessage("Format {pendidikanTerakhir} tidak valid (!NULL)")
+    .isIn(["SMA", "SMK", "S1", "S2", "S3", "D3"])
+    .withMessage(
+      "Format {pendidikanTerakhir} tidak valid (SMA/SMK/S1/S2/S3/D3)",
+    ),
+  body("namaKampus")
+    .optional()
+    .notEmpty({ ignore_whitespace: true })
+    .trim()
+    .withMessage("Format {namaKampus} tidak valid (!NULL)"),
+  body("jurusan")
+    .optional()
+    .notEmpty({ ignore_whitespace: true })
+    .trim()
+    .withMessage("Format {jurusan} tidak valid (!NULL)"),
   body("tahunLulus")
     .optional()
-    .customSanitizer((val) => (val ? Number(val) : null))
-    .isInt({ min: 1900, max: new Date().getFullYear() })
-    .withMessage("Tahun lulus tidak valid"),
+    .notEmpty({ ignore_whitespace: true })
+    .trim()
+    .withMessage("Format {jurusan} tidak valid (!NULL)")
+    .isInt({
+      allow_leading_zeroes: false,
+      min: 1900,
+      max: new Date().getFullYear(),
+    })
+    .toInt()
+    .withMessage(
+      `Format {tahunLulus} tidak valid [min: 1900, max: ${new Date().getFullYear()}]`,
+    ),
   body("jabatanId")
-    .customSanitizer((val) => Number(val))
-    .isInt({ min: 1 })
-    .withMessage("Jabatan wajib dipilih"),
+    .notEmpty({ ignore_whitespace: true })
+    .trim()
+    .withMessage("Format {jabatanId} tidak valid (!NULL)")
+    .isInt({ min: 1, allow_leading_zeroes: false })
+    .toInt()
+    .withMessage("Format {jabatanId} tidak valid [min: 1]"),
   body("mataPelajaranId")
-    .customSanitizer((val) => Number(val))
-    .isInt({ min: 1 })
-    .withMessage("Mapel wajib dipilih"),
+    .notEmpty()
+    .trim()
+    .withMessage("Format {mataPelajaranId} tidak valid")
+    .isInt({ min: 1, allow_leading_zeroes: false })
+    .toInt()
+    .withMessage("Format {mataPelajaranId} tidak valid [min: 1]"),
   body("nomorBpjs")
     .optional()
-    .customSanitizer((val) => (val ? val : null)),
+    .isNumeric({ no_symbols: true })
+    .withMessage("Format {nomorBpjs} tidak valid (NUMBER)"),
   body("kontakDarurat")
     .optional()
-    .customSanitizer((val) => (val ? val : null)),
+    .isNumeric({ no_symbols: true })
+    .withMessage("Format {kontakDarurat} tidak valid (NUMBER)"),
 ];
 
 const updateBodyValidator = [

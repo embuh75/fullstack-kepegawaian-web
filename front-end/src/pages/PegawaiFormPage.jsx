@@ -1,12 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { pegawaiApi } from "../api/pegawai";
-import {
-  JABATAN_OPTIONS,
-  MATA_PELAJARAN_OPTIONS,
-  STATUS_PERNIKAHAN_OPTIONS,
-  JENIS_KELAMIN_OPTIONS,
-} from "../utils/masterData";
+import { status, gender, getMapel, getJabatan } from "../utils/masterData";
 import { toast } from "../store/toastStore";
 
 const emptyForm = {
@@ -43,14 +38,30 @@ export default function PegawaiFormPage() {
   const [serverError, setServerError] = useState("");
   const [loading, setLoading] = useState(isEdit);
   const [submitting, setSubmitting] = useState(false);
+  const [mapels, setMapels] = useState(null);
+  const [jabatans, setJabatans] = useState(null);
 
   useEffect(() => {
+    (async () => {
+      try {
+        const mapel = await getMapel();
+        const jabatan = await getJabatan();
+
+        setMapels(mapel.data.data);
+        setJabatans(jabatan.data.data);
+      } catch (err) {
+        console.error(err);
+      }
+    })();
+
     if (!isEdit) return;
     let active = true;
+
     (async () => {
       try {
         const { data } = await pegawaiApi.getById(id);
         const p = data.data;
+
         if (!active) return;
         setForm({
           nama: p.nama || "",
@@ -169,6 +180,7 @@ export default function PegawaiFormPage() {
         nomorBpjs: form.nomorBpjs || undefined,
         kontakDarurat: form.kontakDarurat || undefined,
         foto: form.foto || undefined,
+        mataPelajaranId: Number(form.mataPelajaranId)
       };
 
       if (isEdit) {
@@ -315,7 +327,7 @@ export default function PegawaiFormPage() {
               className={inputClass(errors.jenisKelamin)}
             >
               <option value="">Pilih...</option>
-              {JENIS_KELAMIN_OPTIONS.map((o) => (
+              {gender.map((o) => (
                 <option key={o.value} value={o.value}>
                   {o.label}
                 </option>
@@ -329,7 +341,7 @@ export default function PegawaiFormPage() {
               className={inputClass(errors.status)}
             >
               <option value="">Pilih...</option>
-              {STATUS_PERNIKAHAN_OPTIONS.map((o) => (
+              {status.map((o) => (
                 <option key={o.value} value={o.value}>
                   {o.label}
                 </option>
@@ -418,7 +430,7 @@ export default function PegawaiFormPage() {
               className={inputClass(errors.jabatanId)}
             >
               <option value="">Pilih Jabatan...</option>
-              {JABATAN_OPTIONS.map((j) => (
+              {jabatans?.map((j) => (
                 <option key={j.id} value={j.id}>
                   {j.nama}
                 </option>
@@ -431,7 +443,7 @@ export default function PegawaiFormPage() {
               Mata Pelajaran{" "}
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-48 overflow-y-auto border border-slate-200 dark:border-[#2A3554] rounded-lg p-3 bg-white dark:bg-[#141A30]">
-              {MATA_PELAJARAN_OPTIONS.map((m) => (
+              {mapels?.map((m) => (
                 <label
                   key={m.id}
                   className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300 cursor-pointer"

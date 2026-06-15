@@ -3,7 +3,7 @@ const prisma = require("../config/database");
 const {
   createValidator,
   updateValidator,
-} = require("../middlewares/validator.js");
+} = require("../utils/validator/serviceValidator");
 
 const select = {
   id: true,
@@ -29,6 +29,18 @@ const select = {
   user: { select: { id: true, username: true } },
   createdAt: true,
   updatedAt: true,
+};
+
+const getMapel = async () => {
+  const result = await prisma.mataPelajaran.findMany();
+
+  return result;
+};
+
+const getJabatan = async () => {
+  const result = await prisma.jabatan.findMany();
+
+  return result;
 };
 
 const getAll = async ({ page = 1, limit = 10, search, jabatanId }) => {
@@ -129,4 +141,4 @@ const remove = async (id) => {
   await prisma.pegawai.delete({ where: { id: Number(id) } });
 };
 
-module.exports = { getAll, getById, create, update, remove };
+module.exports = { getMapel, getJabatan, getAll, getById, create, update, remove };

@@ -2,6 +2,24 @@ const { validationResult } = require("express-validator");
 const pegawaiService = require("../services/pegawaiService");
 const response = require("../utils/response");
 
+const getMapel = async (req, res, next) => {
+  try {
+    const result = await pegawaiService.getMapel();
+    return response.success(res, result, "Data mata pelajaran");
+  } catch (err) {
+    next(err);
+  }
+};
+
+const getJabatan = async (req, res, next) => {
+  try {
+    const result = await pegawaiService.getJabatan();
+    return response.success(res, result, "Data Jabatan");
+  } catch (err) {
+    next(err);
+  }
+};
+
 const getAll = async (req, res, next) => {
   try {
     const {
@@ -88,4 +106,4 @@ const remove = async (req, res, next) => {
   }
 };
 
-module.exports = { getAll, getById, create, update, remove };
+module.exports = { getMapel, getJabatan, getAll, getById, create, update, remove };
