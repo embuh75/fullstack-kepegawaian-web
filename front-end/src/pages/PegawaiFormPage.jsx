@@ -63,6 +63,7 @@ export default function PegawaiFormPage() {
         const p = data.data;
 
         if (!active) return;
+
         setForm({
           nama: p.nama || "",
           foto: p.foto || "",
@@ -80,9 +81,7 @@ export default function PegawaiFormPage() {
           jurusan: p.jurusan || "",
           tahunLulus: p.tahunLulus ?? "",
           jabatanId: p.jabatan?.id ?? "",
-          mataPelajaranId: (p.mataPelajaran || []).map(
-            (m) => m.mataPelajaran.id,
-          ),
+          mataPelajaranId: [p.mataPelajaran].map((m) => m.id),
           nomorBpjs: p.nomorBpjs || "",
           kontakDarurat: p.kontakDarurat || "",
         });
@@ -180,7 +179,7 @@ export default function PegawaiFormPage() {
         nomorBpjs: form.nomorBpjs || undefined,
         kontakDarurat: form.kontakDarurat || undefined,
         foto: form.foto || undefined,
-        mataPelajaranId: Number(form.mataPelajaranId)
+        mataPelajaranId: Number(form.mataPelajaranId),
       };
 
       if (isEdit) {
@@ -293,9 +292,9 @@ export default function PegawaiFormPage() {
               className={`${inputClass(errors.noNBM)} font-tabular`}
             />
           </Field>
-          <Field label="URL Foto" error={errors.foto}>
+          <Field label="Foto" error={errors.foto}>
             <input
-              type="text"
+              type="file"
               value={form.foto}
               onChange={(e) => handleChange("foto", e.target.value)}
               className={inputClass(errors.foto)}
@@ -437,26 +436,27 @@ export default function PegawaiFormPage() {
               ))}
             </select>
           </Field>
-
           <div className="md:col-span-2">
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
               Mata Pelajaran{" "}
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-48 overflow-y-auto border border-slate-200 dark:border-[#2A3554] rounded-lg p-3 bg-white dark:bg-[#141A30]">
-              {mapels?.map((m) => (
-                <label
-                  key={m.id}
-                  className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300 cursor-pointer"
-                >
-                  <input
-                    type="checkbox"
-                    checked={form.mataPelajaranId.includes(m.id)}
-                    onChange={() => toggleMapel(m.id)}
-                    className="rounded border-slate-300 dark:border-[#2A3554] text-indigo-600 focus:ring-indigo-500"
-                  />
-                  {`${m.id}. ${m.nama}`}
-                </label>
-              ))}
+              {mapels?.map((m) => {
+                return (
+                  <label
+                    key={m.id}
+                    className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300 cursor-pointer"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={form.mataPelajaranId.includes(m.id)}
+                      onChange={() => toggleMapel(m.id)}
+                      className="rounded border-slate-300 dark:border-[#2A3554] text-indigo-600 focus:ring-indigo-500"
+                    />
+                    {`${m.id}. ${m.nama}`}
+                  </label>
+                );
+              })}
             </div>
           </div>
         </Section>

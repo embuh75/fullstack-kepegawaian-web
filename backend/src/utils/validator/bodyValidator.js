@@ -35,11 +35,6 @@ const createBodyValidator = [
     .withMessage("Format {noNBM} tidak valid (NUMBER)")
     .isLength({ max: 20 })
     .withMessage("Format {noNBM} tidak valid [max: 20]"),
-  body("foto")
-    .optional()
-    .notEmpty({ ignore_whitespace: true })
-    .trim()
-    .withMessage("Format {foto} tidak valid"),
   body("tempatLahir")
     .optional()
     .notEmpty({ ignore_whitespace: true })
@@ -157,11 +152,6 @@ const updateBodyValidator = [
     .withMessage("Format {noNBM} tidak valid (NUMBER)")
     .isLength({ max: 20 })
     .withMessage("Format {noNBM} tidak valid [max: 20]"),
-  body("foto")
-    .optional()
-    .notEmpty({ ignore_whitespace: true })
-    .trim()
-    .withMessage("Format {foto} tidak valid"),
   body("tempatLahir")
     .optional()
     .notEmpty({ ignore_whitespace: true })

@@ -8,10 +8,28 @@ const storage = multer.diskStorage({
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     const fileExt = path.extname(file.originalname);
-    cb(null, `IMG_${uniqueSuffix}.${fileExt}`);
+
+    cb(null, `IMG_${uniqueSuffix}${fileExt}`);
   },
 });
 
-const upload = multer({ storage: storage });
+const fileFilter = (req, file, callback) => {
+  const fileExt = path.extname(file.originalname);
+  const allowedTypes = [".jpeg", ".jpg", ".png", ".webp"];
+
+  if (!allowedTypes.includes(fileExt)) {
+    return callback(
+      new Error("Format gambar salah! (.jpeg, .jpg, .png, .webp)"),
+    );
+  }
+
+  callback(null, true);
+};
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter,
+});
 
 module.exports = upload;

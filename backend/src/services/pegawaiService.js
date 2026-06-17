@@ -64,7 +64,7 @@ const getAll = async ({ page = 1, limit = 10, search, jabatanId }) => {
       select,
       skip,
       take: limit,
-      orderBy: { nama: "asc" },
+      orderBy: { id: "asc" },
     }),
     prisma.pegawai.count({ where }),
   ]);
@@ -87,9 +87,12 @@ const getById = async (id) => {
 };
 
 const create = async (req, res) => {
-  const data = req.body;
-  const filePath = req.file ? req.file.path : null;
+  //file foto
+  const baseUrl = `${req.protocol}://${req.get('host')}`;
+  const fotoUrl = `${baseUrl}/api/v1/img/${req.file?.filename}`;
 
+  const data = {foto: req.file ? fotoUrl : null, ...req.body};
+  
   await createValidator(data);
 
   // Pisahkan mataPelajaran dari data utama
@@ -112,18 +115,21 @@ const update = async (req, res) => {
   const id = req.params.id;
   const data = req.body;
 
-  /* await getById(id);
+  await getById(id);
 
-  await updateValidator(id, data); */
+  await updateValidator(id, data);
 
-  res.json(data);
-
-  /* // Pisahkan mataPelajaran
+  // Pisahkan mataPelajaran
   const { mataPelajaranIds, ...pegawaiData } = data;
+
+  //file foto
+  const baseUrl = `${req.protocol}://${req.get('host')}`;
+  const fotoUrl = `${baseUrl}/api/v1/img/${req.file?.filename}`;
 
   return prisma.pegawai.update({
     where: { id: Number(id) },
     data: {
+      foto: req.file ? fotoUrl : null,
       ...pegawaiData,
       ...(mataPelajaranIds && {
         mataPelajaran: {
@@ -133,7 +139,7 @@ const update = async (req, res) => {
       }),
     },
     select,
-  }); */
+  });
 };
 
 const remove = async (id) => {

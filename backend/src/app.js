@@ -38,6 +38,7 @@ app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 
 // Routes & Handler
 app.use("/api/v1", routes);
+app.use("/api/v1/img", express.static("public/uploads/"));
 app.use(notFoundHandler);
 app.use(errorHandler);
 

@@ -1,5 +1,4 @@
 const router = require("express").Router();
-
 const auth = require("./authRoutes");
 const pegawai = require("./pegawaiRoutes");
 

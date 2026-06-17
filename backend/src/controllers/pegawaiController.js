@@ -1,3 +1,4 @@
+const fs = require("fs");
 const { validationResult } = require("express-validator");
 const pegawaiService = require("../services/pegawaiService");
 const response = require("../utils/response");
@@ -62,10 +63,14 @@ const getById = async (req, res, next) => {
 };
 
 const create = async (req, res, next) => {
+  const filePath = req.file?.destination + req.file?.filename;
+  // res.json({foto: filePath, data: req.body});
+
   try {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
+      if(req.file) fs.unlinkSync(filePath);
       return response.validationError(res, errors.array());
     }
 
@@ -75,15 +80,20 @@ const create = async (req, res, next) => {
       "Pegawai berhasil ditambahkan",
     );
   } catch (err) {
+    if(req.file) fs.unlinkSync(filePath);
     next(err);
   }
 };
 
 const update = async (req, res, next) => {
+  const filePath = req.file?.destination + req.file?.filename;
+  // res.json({foto: filePath, data: req.body});
+
   try {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
+      if (req.file) fs.unlinkSync(filePath);
       return response.validationError(res, errors.array());
     }
 
@@ -93,6 +103,7 @@ const update = async (req, res, next) => {
       "Data pegawai diperbarui",
     );
   } catch (err) {
+    if (req.file) fs.unlinkSync(filePath);
     next(err);
   }
 };
@@ -106,4 +117,12 @@ const remove = async (req, res, next) => {
   }
 };
 
-module.exports = { getMapel, getJabatan, getAll, getById, create, update, remove };
+module.exports = {
+  getMapel,
+  getJabatan,
+  getAll,
+  getById,
+  create,
+  update,
+  remove,
+};
