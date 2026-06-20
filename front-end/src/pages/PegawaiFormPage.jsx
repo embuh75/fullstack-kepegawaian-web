@@ -66,7 +66,7 @@ export default function PegawaiFormPage() {
 
         setForm({
           nama: p.nama || "",
-          foto: p.foto || "",
+          foto: p.foto || null,
           noKTP: p.noKTP || "",
           noNBM: p.noNBM || "",
           tempatLahir: p.tempatLahir || "",
@@ -167,6 +167,8 @@ export default function PegawaiFormPage() {
 
     setSubmitting(true);
     try {
+      const formData = new FormData();
+
       const payload = {
         ...form,
         noNBM: form.noNBM || undefined,
@@ -182,13 +184,21 @@ export default function PegawaiFormPage() {
         mataPelajaranId: Number(form.mataPelajaranId),
       };
 
+      //konvert ke form
+      Object.entries(payload).forEach(([key, value]) => {
+        if(value !== undefined) formData.append(key, value);
+      })
+
       if (isEdit) {
-        await pegawaiApi.update(id, payload);
+        // await pegawaiApi.update(id, payload);
+        await pegawaiApi.update(id, formData);
         toast.success(`Data "${form.nama}" berhasil diperbarui.`);
       } else {
-        await pegawaiApi.create(payload);
+        // await pegawaiApi.create(payload);
+        await pegawaiApi.create(formData);
         toast.success(`Pegawai "${form.nama}" berhasil ditambahkan.`);
       }
+      
       navigate("/pegawai");
     } catch (err) {
       const res = err.response?.data;
@@ -295,8 +305,7 @@ export default function PegawaiFormPage() {
           <Field label="Foto" error={errors.foto}>
             <input
               type="file"
-              value={form.foto}
-              onChange={(e) => handleChange("foto", e.target.value)}
+              onChange={(e) => handleChange("foto", e.target.files[0])}
               className={inputClass(errors.foto)}
             />
           </Field>
@@ -360,7 +369,10 @@ export default function PegawaiFormPage() {
               className={inputClass(errors.alamatRumah)}
             />
           </Field>
-          <Field label="Nomor Telepon" error={errors.nomorTelephone}>
+          <Field
+            label="Nomor Telepon (tambahkan 62 didepan 8, contoh: 628xxxxx)"
+            error={errors.nomorTelephone}
+          >
             <input
               type="text"
               value={form.nomorTelephone}
@@ -380,7 +392,7 @@ export default function PegawaiFormPage() {
 
         <Section title="Pendidikan">
           <Field
-            label="Pendidikan Terakhir"
+            label='Pendidikan Terakhir (isi dengan "-" jika tidak ada)'
             error={errors.pendidikanTerakhir}
             required
           >
@@ -470,7 +482,10 @@ export default function PegawaiFormPage() {
               className={`${inputClass(errors.nomorBpjs)} font-tabular`}
             />
           </Field>
-          <Field label="Kontak Darurat" error={errors.kontakDarurat}>
+          <Field
+            label="Kontak Darurat (tambahkan 62 didepan 8, contoh: 628xxxxx)"
+            error={errors.kontakDarurat}
+          >
             <input
               type="text"
               value={form.kontakDarurat}

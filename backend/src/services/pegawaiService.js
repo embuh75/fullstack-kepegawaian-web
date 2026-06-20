@@ -1,4 +1,5 @@
 // src/services/pegawaiService.js
+require("dotenv").config();
 const prisma = require("../config/database");
 const {
   createValidator,
@@ -88,11 +89,14 @@ const getById = async (id) => {
 
 const create = async (req, res) => {
   //file foto
-  const baseUrl = `${req.protocol}://${req.get('host')}`;
+  const baseUrl = process.env.APP_URL;
   const fotoUrl = `${baseUrl}/api/v1/img/${req.file?.filename}`;
 
-  const data = {foto: req.file ? fotoUrl : null, ...req.body};
-  
+  //body
+  /* req.body.jabatanId = Number(req.body.jabatanId);
+  req.body.mataPelajaranId = Number(req.body.mataPelajaranId); */
+  const data = { foto: req.file ? fotoUrl : null, ...req.body };
+
   await createValidator(data);
 
   // Pisahkan mataPelajaran dari data utama
@@ -112,8 +116,15 @@ const create = async (req, res) => {
 };
 
 const update = async (req, res) => {
+  //file foto
+  const baseUrl = process.env.APP_URL;
+  const fotoUrl = `${baseUrl}/api/v1/img/${req.file?.filename}`;
+
+  //body
   const id = req.params.id;
-  const data = req.body;
+  req.body.jabatanId = Number(req.body.jabatanId);
+  req.body.mataPelajaranId = Number(req.body.mataPelajaranId);
+  const data = { foto: req.file ? fotoUrl : null, ...req.body };
 
   await getById(id);
 
@@ -122,14 +133,9 @@ const update = async (req, res) => {
   // Pisahkan mataPelajaran
   const { mataPelajaranIds, ...pegawaiData } = data;
 
-  //file foto
-  const baseUrl = `${req.protocol}://${req.get('host')}`;
-  const fotoUrl = `${baseUrl}/api/v1/img/${req.file?.filename}`;
-
   return prisma.pegawai.update({
     where: { id: Number(id) },
     data: {
-      foto: req.file ? fotoUrl : null,
       ...pegawaiData,
       ...(mataPelajaranIds && {
         mataPelajaran: {
@@ -147,4 +153,12 @@ const remove = async (id) => {
   await prisma.pegawai.delete({ where: { id: Number(id) } });
 };
 
-module.exports = { getMapel, getJabatan, getAll, getById, create, update, remove };
+module.exports = {
+  getMapel,
+  getJabatan,
+  getAll,
+  getById,
+  create,
+  update,
+  remove,
+};

@@ -77,7 +77,7 @@ const createBodyValidator = [
     .notEmpty()
     .trim()
     .withMessage("Format {pendidikanTerakhir} tidak valid (!NULL)")
-    .isIn(["SMA", "SMK", "S1", "S2", "S3", "D3"])
+    .isIn(["SMA", "SMK", "S1", "S2", "S3", "D3", "-"])
     .withMessage(
       "Format {pendidikanTerakhir} tidak valid (SMA/SMK/S1/S2/S3/D3)",
     ),
@@ -197,7 +197,7 @@ const updateBodyValidator = [
     .notEmpty({ ignore_whitespace: true })
     .trim()
     .withMessage("Format {pendidikanTerakhir} tidak valid (!NULL)")
-    .isIn(["SMA", "SMK", "S1", "S2", "S3", "D3"])
+    .isIn(["SMA", "SMK", "S1", "S2", "S3", "D3", "-"])
     .withMessage(
       "Format {pendidikanTerakhir} tidak valid (SMA/SMK/S1/S2/S3/D3)",
     ),

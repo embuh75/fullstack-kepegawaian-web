@@ -19,7 +19,6 @@ export default function PegawaiDetailPage() {
       try {
         const { data } = await pegawaiApi.getById(id);
         if (active) setPegawai(data.data);
-        console.log(data.data);
       } catch (err) {
         if (active)
           setError(err.response?.data?.message || "Gagal memuat data pegawai");
@@ -138,6 +137,15 @@ export default function PegawaiDetailPage() {
           <Item label="Nama" value={pegawai.nama} />
           <Item label="Nomor KTP" value={pegawai.noKTP} mono />
           <Item label="Nomor NBM" value={pegawai.noNBM} mono />
+          <Card>
+            {pegawai.foto ? (
+              <img className="mx-auto w-72 h-72" src={pegawai.foto} alt={pegawai.nama} />
+            ) : (
+              <span className="text-rose-600 dark:text-rose-400">
+                Foto belum diupload!
+              </span>
+            )}
+          </Card>
         </Card>
 
         <Card title="Data Pribadi">
@@ -155,7 +163,11 @@ export default function PegawaiDetailPage() {
           <Item label="Alamat Rumah" value={pegawai.alamatRumah} />
           <Item
             label="Nomor Telepon"
-            value={toInternational(pegawai.nomorTelephone)}
+            value={
+              pegawai.kontakDarurat
+                ? toInternational(pegawai.kontakDarurat)
+                : "-"
+            }
             mono
           />
           <Item label="Alamat Email" value={pegawai.alamatEmail} />
@@ -164,7 +176,9 @@ export default function PegawaiDetailPage() {
         <Card title="Pendidikan">
           <Item
             label="Pendidikan Terakhir"
-            value={pegawai.pendidikanTerakhir}
+            value={
+              pegawai.pendidikanTerakhir ? pegawai.pendidikanTerakhir : "-"
+            }
           />
           <Item label="Nama Kampus" value={pegawai.namaKampus} />
           <Item label="Jurusan" value={pegawai.jurusan} />
@@ -201,7 +215,14 @@ export default function PegawaiDetailPage() {
 
         <Card title="Asuransi & Kontak Darurat">
           <Item label="Nomor BPJS" value={pegawai.nomorBpjs} mono />
-          <Item label="Kontak Darurat" value={toInternational(pegawai.kontakDarurat)} />
+          <Item
+            label="Kontak Darurat"
+            value={
+              pegawai.kontakDarurat
+                ? toInternational(pegawai.kontakDarurat)
+                : "-"
+            }
+          />
         </Card>
       </div>
     </div>

@@ -4,7 +4,7 @@ Projek fullstack website kepegawaian dengan ExpressJS + Vite-React.
 
 ## Login default
 ```
-username: fun
-password: Entahlah123
+username: admin
+password: Admin123
 ```
 baca README.md di backend & front-end untuk lebih jelasnya.

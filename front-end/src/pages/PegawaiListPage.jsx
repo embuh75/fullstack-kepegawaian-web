@@ -289,9 +289,18 @@ export default function PegawaiListPage() {
                   >
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-300 flex items-center justify-center text-xs font-semibold shrink-0">
-                          {p.nama?.charAt(0).toUpperCase()}
-                        </div>
+                        {p.foto ? (
+                          <img
+                            src={p.foto}
+                            alt={p.nama}
+                            className="w-11 h-11 rounded-full object-cover border border-slate-200 dark:border-[#2A3554]"
+                            onError={(e) => (e.target.style.display = "none")}
+                          />
+                        ) : (
+                          <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-300 flex items-center justify-center text-xs font-semibold shrink-0">
+                            {p.nama?.charAt(0).toUpperCase()}
+                          </div>
+                        )}
                         <span className="font-medium text-slate-800 dark:text-slate-100">
                           {p.nama}
                         </span>
