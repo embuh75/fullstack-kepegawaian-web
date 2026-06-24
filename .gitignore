@@ -1,0 +1,19 @@
+# Backend
+backend/node_modules/
+backend/bun.lock
+backend/package-lock.json
+backend/dist/
+backend/logs/
+backend/.vscode/
+backend/prisma/migrations/
+backend/public/pegawai/
+backend/public/uploads/
+backend/*.log
+backend/.DS_Store
+backend/.env
+
+# Front-End
+front-end/node_modules/
+front-end/bun.lock
+front-end/package-lock.json
+front-end/.env
