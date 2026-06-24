@@ -81,11 +81,7 @@ export default function PegawaiFormPage() {
           jurusan: p.jurusan || "",
           tahunLulus: p.tahunLulus ?? "",
           jabatanId: p.jabatan?.id ?? "",
-<<<<<<< HEAD
           mataPelajaranId: Array.isArray(p.mataPelajaran) ? p.mataPelajaran.map((m) => m.mataPelajaran?.id).filter(Boolean) : [],
-=======
-          mataPelajaranId: [p.mataPelajaran].map((m) => m.id),
->>>>>>> 898c7b6573e86a41da64e90e291b0ff89da570d3
           nomorBpjs: p.nomorBpjs || "",
           kontakDarurat: p.kontakDarurat || "",
         });
@@ -189,7 +185,6 @@ export default function PegawaiFormPage() {
         nomorBpjs: form.nomorBpjs || undefined,
         kontakDarurat: form.kontakDarurat || undefined,
         foto: form.foto || undefined,
-<<<<<<< HEAD
         mataPelajaranId: form.mataPelajaranId,
       };
 
@@ -201,14 +196,6 @@ export default function PegawaiFormPage() {
         } else {
           formData.append(key, value);
         }
-=======
-        mataPelajaranId: Number(form.mataPelajaranId),
-      };
-
-      //konvert ke form
-      Object.entries(payload).forEach(([key, value]) => {
-        if (value !== undefined) formData.append(key, value);
->>>>>>> 898c7b6573e86a41da64e90e291b0ff89da570d3
       });
 
       if (isEdit) {
@@ -573,8 +560,4 @@ function inputClass(error) {
       ? "border-rose-400 dark:border-rose-600"
       : "border-slate-300 dark:border-[#2A3554]"
   }`;
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 898c7b6573e86a41da64e90e291b0ff89da570d3
