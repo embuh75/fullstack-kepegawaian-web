@@ -81,11 +81,7 @@ export default function PegawaiFormPage() {
           jurusan: p.jurusan || "",
           tahunLulus: p.tahunLulus ?? "",
           jabatanId: p.jabatan?.id ?? "",
-<<<<<<< HEAD
-          mataPelajaranId: Array.isArray(p.mataPelajaran) ? p.mataPelajaran.map((m) => m.mataPelajaran?.id).filter(Boolean) : [],
-=======
           mataPelajaranId: [p.mataPelajaran].map((m) => m.id),
->>>>>>> 898c7b6573e86a41da64e90e291b0ff89da570d3
           nomorBpjs: p.nomorBpjs || "",
           kontakDarurat: p.kontakDarurat || "",
         });
@@ -126,6 +122,10 @@ export default function PegawaiFormPage() {
 
     if (form.noNBM && form.noNBM.length > 20)
       e.noNBM = "Nomor NBM maksimal 20 karakter";
+
+    if(form.foto.size > 10 * 1024 * 1024) {
+      e.foto = "File foto terlalu besar! (max: 10mb)";
+    }
 
     if (!form.tempatLahir.trim()) e.tempatLahir = "Tempat lahir wajib diisi";
     if (!form.tanggalLahir) e.tanggalLahir = "Tanggal lahir wajib diisi";
@@ -185,21 +185,13 @@ export default function PegawaiFormPage() {
         nomorBpjs: form.nomorBpjs || undefined,
         kontakDarurat: form.kontakDarurat || undefined,
         foto: form.foto || undefined,
-<<<<<<< HEAD
+
         mataPelajaranId: form.mataPelajaranId,
       };
 
-      // ✅ Fix: handle array (mataPelajaranId bisa array)
       Object.entries(payload).forEach(([key, value]) => {
-        if (value === undefined) return;
-        if (Array.isArray(value)) {
-          value.forEach((item) => formData.append(key, item));
-        } else {
-          formData.append(key, value);
-        }
-=======
-        mataPelajaranId: Number(form.mataPelajaranId),
-      };
+         if (value !== undefined) formData.append(key, value);
+      });
 
       //konvert ke form
       Object.entries(payload).forEach(([key, value]) => {
@@ -319,7 +311,7 @@ export default function PegawaiFormPage() {
               className={`${inputClass(errors.noNBM)} font-tabular`}
             />
           </Field>
-          <Field label="Foto" error={errors.foto}>
+          <Field label="Foto (max: 10mb)" error={errors.foto}>
             <input
               type="file"
               onChange={(e) => handleChange("foto", e.target.files[0])}
@@ -567,8 +559,4 @@ function inputClass(error) {
       ? "border-rose-400 dark:border-rose-600"
       : "border-slate-300 dark:border-[#2A3554]"
   }`;
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 898c7b6573e86a41da64e90e291b0ff89da570d3

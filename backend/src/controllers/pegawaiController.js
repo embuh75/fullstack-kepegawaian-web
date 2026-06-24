@@ -70,7 +70,7 @@ const create = async (req, res, next) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      if(req.file) fs.unlinkSync(filePath);
+      if (req.file) fs.unlinkSync(filePath);
       return response.validationError(res, errors.array());
     }
 
@@ -80,7 +80,7 @@ const create = async (req, res, next) => {
       "Pegawai berhasil ditambahkan",
     );
   } catch (err) {
-    if(req.file) fs.unlinkSync(filePath);
+    if (req.file) fs.unlinkSync(filePath);
     next(err);
   }
 };
@@ -112,7 +112,7 @@ const remove = async (req, res, next) => {
   try {
     await pegawaiService.remove(req.params.id);
     // return response.success(res, null, "Data pegawai dihapus");
-    return res.status(200).json({
+      return res.status(200).json({
       success: true,
       message: 'Data pegawai berhasil dihapus',
     });
