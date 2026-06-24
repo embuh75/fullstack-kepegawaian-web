@@ -111,7 +111,11 @@ const update = async (req, res, next) => {
 const remove = async (req, res, next) => {
   try {
     await pegawaiService.remove(req.params.id);
-    return response.success(res, null, "Data pegawai dihapus");
+    // return response.success(res, null, "Data pegawai dihapus");
+    return res.status(200).json({
+      success: true,
+      message: 'Data pegawai berhasil dihapus',
+    });
   } catch (err) {
     next(err);
   }
