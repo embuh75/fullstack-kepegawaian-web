@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // src/utils/validator/serviceValidator.js
 const prisma = require("../../config/database");
 
@@ -28,10 +29,72 @@ const createValidator = async (data) => {
   if (data.nomorBpjs) {
     const dup = await prisma.pegawai.findUnique({ where: { nomorBpjs: data.nomorBpjs } });
     if (dup) throwError(409, `Nomor BPJS: ${data.nomorBpjs} sudah terdaftar`);
+=======
+const prisma = require("../../config/database");
+
+const createValidator = async (data) => {
+  try {
+    // Cek duplikat KTP
+    if (data.noKTP) {
+      const duplicate = await prisma.pegawai.findUnique({
+        where: { noKTP: data.noKTP },
+      });
+
+      if (duplicate)
+        throw {
+          statusCode: 409,
+          message: `Nomor KTP: ${data.noKTP} sudah terdaftar`,
+        };
+    }
+
+    // Cek duplikat NBM
+    if (data.noNBM) {
+      const duplicate = await prisma.pegawai.findUnique({
+        where: { noNBM: data.noNBM },
+      });
+
+      if (duplicate)
+        throw {
+          statusCode: 409,
+          message: `Nomor NBM: ${data.noNBM} sudah terdaftar`,
+        };
+    }
+
+    // cek duplikasi email
+    if (data.alamatEmail) {
+      const duplicate = await prisma.pegawai.findUnique({
+        where: { alamatEmail: data.alamatEmail },
+      });
+
+      if (duplicate) {
+        throw {
+          statusCode: 409,
+          message: `Email: ${data.alamatEmail} sudah terdaftar`,
+        };
+      }
+    }
+
+    // cek duplikasi BPJS
+    if (data.nomorBpjs) {
+      const duplicate = await prisma.pegawai.findUnique({
+        where: { nomorBpjs: data.nomorBpjs },
+      });
+
+      if (duplicate) {
+        throw {
+          statusCode: 409,
+          message: `Nomor BPJS: ${data.nomorBpjs} sudah terdaftar`,
+        };
+      }
+    }
+  } catch (error) {
+    throw error;
+>>>>>>> 898c7b6573e86a41da64e90e291b0ff89da570d3
   }
 };
 
 const updateValidator = async (id, data) => {
+<<<<<<< HEAD
   if (data.noKTP) {
     const dup = await prisma.pegawai.findFirst({ where: { noKTP: data.noKTP, NOT: { id: Number(id) } } });
     if (dup) throwError(409, `Nomor KTP ${data.noKTP} sudah digunakan`);
@@ -54,3 +117,66 @@ const updateValidator = async (id, data) => {
 };
 
 module.exports = { createValidator, updateValidator };
+=======
+  try {
+    // Cek duplikat KTP di pegawai lain
+    if (data.noKTP) {
+      const dup = await prisma.pegawai.findFirst({
+        where: { noKTP: data.noKTP, NOT: { id: Number(id) } },
+      });
+      if (dup)
+        throw {
+          statusCode: 409,
+          message: `Nomor KTP ${data.noKTP} sudah digunakan`,
+        };
+    }
+
+    // Cek duplikat NBM di pegawai lain
+    if (data.noNBM) {
+      const dup = await prisma.pegawai.findFirst({
+        where: { noNBM: data.noNBM, NOT: { id: Number(id) } },
+      });
+      if (dup)
+        throw {
+          statusCode: 409,
+          message: `Nomor NBM ${data.noNBM} sudah digunakan`,
+        };
+    }
+
+    // Cek duplikat email di pegawai lain
+    if (data.alamatEmail) {
+      const dup = await prisma.pegawai.findFirst({
+        where: { alamatEmail: data.alamatEmail, NOT: { id: Number(id) } },
+      });
+      if (dup)
+        throw {
+          statusCode: 409,
+          message: `Email ${data.alamatEmail} sudah digunakan`,
+        };
+    }
+
+    // Cek duplikat nomor bpjs di pegawai lain
+    if (data.nomorBpjs) {
+      const dup = await prisma.pegawai.findFirst({
+        where: { nomorBpjs: data.nomorBpjs, NOT: { id: Number(id) } },
+      });
+      if (dup)
+        throw {
+          statusCode: 409,
+          message: `Nomor Bpjs ${data.nomorBpjs} sudah digunakan`,
+        };
+    }
+
+    // Konversi tanggal
+    if (data.tanggalLahir) data.tanggalLahir = new Date(data.tanggalLahir);
+    if (data.tahunLulus) data.tahunLulus = Number(data.tahunLulus);
+  } catch (error) {
+    throw error;
+  }
+};
+
+module.exports = {
+  createValidator,
+  updateValidator,
+};
+>>>>>>> 898c7b6573e86a41da64e90e291b0ff89da570d3
