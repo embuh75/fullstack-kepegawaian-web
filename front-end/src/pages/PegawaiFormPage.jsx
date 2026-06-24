@@ -127,10 +127,6 @@ export default function PegawaiFormPage() {
     if (form.noNBM && form.noNBM.length > 20)
       e.noNBM = "Nomor NBM maksimal 20 karakter";
 
-    if(form.foto.size > 10 * 1024 * 1024) {
-      e.foto = "File foto terlalu besar! (max: 10mb)";
-    }
-
     if (!form.tempatLahir.trim()) e.tempatLahir = "Tempat lahir wajib diisi";
     if (!form.tanggalLahir) e.tanggalLahir = "Tanggal lahir wajib diisi";
 
@@ -169,7 +165,7 @@ export default function PegawaiFormPage() {
     const validationErrors = validate();
     setErrors(validationErrors);
     if (Object.keys(validationErrors).length > 0) {
-      toast.error("Periksa kembali form!");
+      toast.error("Periksa kembali isian yang belum sesuai.");
       return;
     }
 
@@ -207,25 +203,23 @@ export default function PegawaiFormPage() {
 
       //konvert ke form
       Object.entries(payload).forEach(([key, value]) => {
-        if (value !== undefined) formData.append(key, value);
->>>>>>> 898c7b6573e86a41da64e90e291b0ff89da570d3
-      });
+        if(value !== undefined) formData.append(key, value);
+      })
 
       if (isEdit) {
-        // console.log(formData);
         // await pegawaiApi.update(id, payload);
         await pegawaiApi.update(id, formData);
         toast.success(`Data "${form.nama}" berhasil diperbarui.`);
       } else {
-        // console.log(formData);
         // await pegawaiApi.create(payload);
         await pegawaiApi.create(formData);
         toast.success(`Pegawai "${form.nama}" berhasil ditambahkan.`);
       }
-
+      
       navigate("/pegawai");
     } catch (err) {
       const res = err.response?.data;
+      console.log(res);
       if (res?.errors && Array.isArray(res.errors)) {
         const fieldErrors = {};
         res.errors.forEach((er) => {
@@ -325,7 +319,7 @@ export default function PegawaiFormPage() {
               className={`${inputClass(errors.noNBM)} font-tabular`}
             />
           </Field>
-          <Field label="Foto (max: 10mb)" error={errors.foto}>
+          <Field label="Foto" error={errors.foto}>
             <input
               type="file"
               onChange={(e) => handleChange("foto", e.target.files[0])}
