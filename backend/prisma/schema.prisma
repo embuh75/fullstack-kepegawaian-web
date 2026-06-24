@@ -1,0 +1,151 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── ROLE & PERMISSION ────────────────────────────────────────────────────────
+
+model Role {
+  id          Int              @id @default(autoincrement())
+  nama        String           @unique @db.VarChar(50)
+  deskripsi   String?          @db.VarChar(255)
+  permissions RolePermission[]
+  users       User[]
+
+  @@map("roles")
+}
+
+model Permission {
+  id        Int              @id @default(autoincrement())
+  nama      String           @unique @db.VarChar(100)
+  modul     String           @db.VarChar(50)
+  aksi      String           @db.VarChar(50)
+  deskripsi String?          @db.VarChar(255)
+  roles     RolePermission[]
+
+  @@map("permissions")
+}
+
+model RolePermission {
+  roleId       Int        @map("role_id")
+  permissionId Int        @map("permission_id")
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+// ─── USER & AUTH ──────────────────────────────────────────────────────────────
+
+model User {
+  id            Int            @id @default(autoincrement())
+  username      String         @unique @db.VarChar(50)
+  email         String         @unique @db.VarChar(100)
+  password      String         @db.VarChar(255)
+  roleId        Int            @map("role_id")
+  role          Role           @relation(fields: [roleId], references: [id])
+  isAktif       Boolean        @default(true) @map("is_aktif")
+  lastLogin     DateTime?      @map("last_login")
+  pegawai       Pegawai?
+  refreshTokens RefreshToken[]
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique @db.VarChar(500)
+  userId    Int      @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("refresh_tokens")
+}
+
+// ─── MASTER DATA ──────────────────────────────────────────────────────────────
+
+model Jabatan {
+  id      Int       @id @default(autoincrement())
+  nama    String    @db.VarChar(100)
+  kode    String    @unique @db.VarChar(20)
+  pegawai Pegawai[]
+
+  @@map("jabatan")
+}
+
+model MataPelajaran {
+  id       Int       @id @default(autoincrement())
+  nama     String    @db.VarChar(100)
+  kode     String    @unique @db.VarChar(20)
+  pegawais Pegawai[]
+
+  @@map("mata_pelajaran")
+}
+
+// ─── DATA KEPEGAWAIAN ─────────────────────────────────────────────────────────
+
+model Pegawai {
+  id Int @id @default(autoincrement())
+
+  // Identitas Utama
+  nama  String  @db.VarChar(150)
+  foto  String? @db.VarChar(255)
+  noKTP String  @unique @map("nomor_ktp") @db.VarChar(20)
+  noNBM String? @unique @map("nomor_nbm") @db.VarChar(20)
+
+  // Data Pribadi
+  tempatLahir    String       @map("tempat_lahir") @db.VarChar(100)
+  tanggalLahir   DateTime     @map("tanggal_lahir")
+  jenisKelamin   JenisKelamin @map("jenis_kelamin")
+  status         Status       @default(Belum_Menikah) @map("status")
+  alamatRumah    String       @map("alamat_rumah") @db.Text
+  nomorTelephone String       @map("nomor_telephone") @db.VarChar(20)
+  alamatEmail    String?      @unique @map("alamat_email") @db.VarChar(100)
+
+  // Pendidikan
+  pendidikanTerakhir String?  @map("pendidikan_terakhir")
+  namaKampus         String? @map("nama_kampus") @db.VarChar(150)
+  jurusan            String? @db.VarChar(150)
+  tahunLulus         Int?    @map("tahun_lulus") @db.Year
+
+  // Kepegawaian
+  jabatanId       Int           @map("jabatan_id")
+  jabatan         Jabatan       @relation(fields: [jabatanId], references: [id])
+  mataPelajaranId Int           @map("mapel_id")
+  mataPelajaran   MataPelajaran @relation(fields: [mataPelajaranId], references: [id])
+
+  // Asuransi & Kontak Darurat
+  nomorBpjs     String? @unique @map("nomor_bpjs") @db.VarChar(30)
+  kontakDarurat String? @map("kontak_darurat") @db.VarChar(255)
+
+  // Relasi
+  userId Int?  @unique @map("user_id")
+  user   User? @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("pegawai")
+}
+
+// ─── ENUMS ────────────────────────────────────────────────────────────────────
+
+enum JenisKelamin {
+  L
+  P
+}
+
+enum Status {
+  Belum_Menikah
+  Menikah
+  Duda
+}
