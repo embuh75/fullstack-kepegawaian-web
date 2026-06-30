@@ -45,7 +45,7 @@ const getJabatan = async () => {
   return await prisma.jabatan.findMany({ orderBy: { id: "asc" } });
 };
 
-const getAll = async ({ page = 1, limit = 10, search, jabatanId }) => {
+const getAll = async ({ page = 1, limit = 10, search }) => {
   const skip = (page - 1) * limit;
   const where = {};
 
@@ -122,7 +122,7 @@ const update = async (req, res) => {
   if(!oldData) {
     throw { statusCode: 404, message: "Data pegawai tidak ditemukan" };
   }
-  
+
   const oldFoto = oldData.foto;
 
   const data = { foto: oldFoto, ...req.body };

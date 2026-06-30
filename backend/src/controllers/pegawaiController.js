@@ -26,14 +26,12 @@ const getAll = async (req, res, next) => {
       page = 1,
       limit = 10,
       search,
-      jabatanId,
     } = req.query;
 
     const result = await pegawaiServices.getAll({
       page: Number(page),
       limit: Number(limit),
       search,
-      jabatanId,
     });
 
     const resp = response.paginated(res, result.data, result.pagination, "Data pegawai");
