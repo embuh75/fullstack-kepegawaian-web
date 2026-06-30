@@ -117,9 +117,7 @@ const create = async (req, res) => {
 };
 
 const update = async (req, res) => {
-  const id = Number(req.params.id);
-  
-  const oldData = await prisma.pegawai.findUnique({where: id, select: {foto: true}});
+  const oldData = await prisma.pegawai.findUnique({where: { id: Number(req.params.id) }, select: { foto: true }});
   const oldFoto = oldData.foto;
 
   const data = { foto: oldFoto, ...req.body };
@@ -129,10 +127,10 @@ const update = async (req, res) => {
     return acc;
   }, {});
 
-  await updateValidator(id, data);
+  await updateValidator(Number(req.params.id), data);
 
   const response = await prisma.pegawai.update({
-    where: id,
+    where: { id: Number(req.params.id) },
     data,
     select: selectFields,
   });
