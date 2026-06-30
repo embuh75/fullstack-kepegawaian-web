@@ -21,7 +21,7 @@ const emptyForm = {
   jurusan: "",
   tahunLulus: "",
   jabatanId: "",
-  mataPelajaranId: [],
+  mataPelajaranId: null,
   nomorBpjs: "",
   kontakDarurat: "",
 };
@@ -81,7 +81,7 @@ export default function PegawaiFormPage() {
           jurusan: p.jurusan || "",
           tahunLulus: p.tahunLulus ?? "",
           jabatanId: p.jabatan?.id ?? "",
-          mataPelajaranId: Array.isArray(p.mataPelajaran) ? p.mataPelajaran.map((m) => m.mataPelajaran?.id).filter(Boolean) : [],
+          mataPelajaranId: p.mataPelajaran.id,
           nomorBpjs: p.nomorBpjs || "",
           kontakDarurat: p.kontakDarurat || "",
         });
@@ -103,7 +103,7 @@ export default function PegawaiFormPage() {
   };
 
   const toggleMapel = (mapelId) => {
-    setForm((f) => {
+    /* setForm((f) => {
       const exists = f.mataPelajaranId.includes(mapelId);
       return {
         ...f,
@@ -111,7 +111,12 @@ export default function PegawaiFormPage() {
           ? f.mataPelajaranId.filter((x) => x !== mapelId)
           : [...f.mataPelajaranId, mapelId],
       };
-    });
+    }); */
+
+    setForm((f) => ({
+      ...f,
+      mataPelajaranId: mapelId, // Langsung timpa nilainya, tidak perlu array
+    }));
   };
 
   const validate = () => {
@@ -123,7 +128,7 @@ export default function PegawaiFormPage() {
     if (form.noNBM && form.noNBM.length > 20)
       e.noNBM = "Nomor NBM maksimal 20 karakter";
 
-    if(form.foto.size > 10 * 1024 * 1024) {
+    if (form.foto.size > 10 * 1024 * 1024) {
       e.foto = "File foto terlalu besar! (max: 10mb)";
     }
 
@@ -458,10 +463,7 @@ export default function PegawaiFormPage() {
               ))}
             </select>
           </Field>
-          <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-              Mata Pelajaran{" "}
-            </label>
+          <Field label={"Mata Pelajaran"} className="md:col-span-2">
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-48 overflow-y-auto border border-slate-200 dark:border-[#2A3554] rounded-lg p-3 bg-white dark:bg-[#141A30]">
               {mapels?.map((m) => {
                 return (
@@ -470,17 +472,19 @@ export default function PegawaiFormPage() {
                     className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300 cursor-pointer"
                   >
                     <input
-                      type="checkbox"
-                      checked={form.mataPelajaranId.includes(m.id)}
+                      type="radio"
+                      name="mataPelajaran"
+                      checked={(m.id == form.mataPelajaranId) ? true : false}
                       onChange={() => toggleMapel(m.id)}
-                      className="rounded border-slate-300 dark:border-[#2A3554] text-indigo-600 focus:ring-indigo-500"
+                      className="rounded-full border-slate-300 dark:border-[#2A3554] text-indigo-600 focus:ring-indigo-500" // rounded-full agar bulat seperti radio button standar
                     />
-                    {`${m.id}. ${m.nama}`}
+                    {`${m.nama}`}
                   </label>
                 );
               })}
             </div>
-          </div>
+          </Field>
+          
         </Section>
 
         <Section title="Asuransi & Kontak Darurat">

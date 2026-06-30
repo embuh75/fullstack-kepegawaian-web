@@ -98,7 +98,7 @@ model Pegawai {
 
   // Identitas Utama
   nama  String  @db.VarChar(150)
-  foto  String? @db.VarChar(255)
+  foto  String? @db.VarChar(255) 
   noKTP String  @unique @map("nomor_ktp") @db.VarChar(20)
   noNBM String? @unique @map("nomor_nbm") @db.VarChar(20)
 

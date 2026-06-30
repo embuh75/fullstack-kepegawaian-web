@@ -13,7 +13,7 @@ const errorHandler = (err, req, res, next) => {
     return response.error(res, `Data duplikat pada: ${field}`, 409);
   }
   if (err.code === "P2025") return response.notFound(res, "Data tidak ditemukan");
-  if (err.code === "P2003") return response.error(res, "Data referensi tidak ditemukan", 400);
+  if (err.code === "P2003") return response.error(res, `Data referensi tidak ditemukan pada tabel: ${err.meta.modelName} field: ${err.meta.field_name}, pastikan input sesuai relasi database!`, 400);
 
   return response.error(res, err.message || "Internal Server Error", err.statusCode || 500);
 };

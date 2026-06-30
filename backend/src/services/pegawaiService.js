@@ -1,10 +1,13 @@
 // src/services/pegawaiService.js
 require("dotenv").config();
+const path = require("path");
 const prisma = require("../config/database");
 const {
   createValidator,
   updateValidator,
 } = require("../utils/validator/serviceValidator");
+const { getFile, uploadFile, deleteFile } = require("../config/bucket");
+const response = require("../utils/response");
 
 const select = {
   id: true,
@@ -35,11 +38,11 @@ const select = {
 };
 
 const getMapel = async () => {
-  return prisma.mataPelajaran.findMany({ orderBy: { nama: "asc" } });
+  return await prisma.mataPelajaran.findMany({ orderBy: { id: "asc" } });
 };
 
 const getJabatan = async () => {
-  return prisma.jabatan.findMany({ orderBy: { nama: "asc" } });
+  return await prisma.jabatan.findMany({ orderBy: { id: "asc" } });
 };
 
 const getAll = async ({ page = 1, limit = 10, search, jabatanId }) => {
@@ -54,7 +57,6 @@ const getAll = async ({ page = 1, limit = 10, search, jabatanId }) => {
       { alamatEmail: { contains: search } },
     ];
   }
-  if (jabatanId) where.jabatanId = Number(jabatanId);
 
   const [data, total] = await prisma.$transaction([
     prisma.pegawai.findMany({
@@ -67,6 +69,12 @@ const getAll = async ({ page = 1, limit = 10, search, jabatanId }) => {
     prisma.pegawai.count({ where }),
   ]);
 
+  for (const result of data) {
+    if (result.foto) {
+      result.foto = await getFile(result.foto);
+    }
+  }
+
   return {
     data,
     pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
@@ -78,92 +86,78 @@ const getById = async (id) => {
     where: { id: Number(id) },
     select,
   });
+
   if (!pegawai)
     throw { statusCode: 404, message: "Data pegawai tidak ditemukan" };
+
+  if (pegawai.foto) {
+    pegawai.foto = await getFile(pegawai.foto);
+  }
+
   return pegawai;
 };
 
-// ✅ Fix #4: konversi mataPelajaranId jadi array of number
-const parseMataPelajaran = (raw) => {
-  if (!raw) return [];
-  if (Array.isArray(raw)) return raw.map(Number);
-  return String(raw)
-    .split(",")
-    .map((x) => Number(x.trim()))
-    .filter(Boolean);
-};
-
 const create = async (req, res) => {
-  const baseUrl = process.env.APP_URL;
-  const fotoUrl = req.file
-    ? `${baseUrl}/api/v1/img/${req.file.filename}`
-    : null;
+  const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+  const fileExt = path.extname(req.file.originalname);
+  const fileName = `IMG_${uniqueSuffix}${fileExt}`;
 
-  const data = { ...(fotoUrl && { foto: fotoUrl }), ...req.body };
+  const data = { foto: fileName, ...req.body };
 
   await createValidator(data);
 
-  // ✅ Fix #4: key mataPelajaranId (bukan mataPelajaranIds)
-  const mataPelajaranId = parseMataPelajaran(data.mataPelajaranId);
-  const { mataPelajaranId: _, ...pegawaiData } = data;
-
-  return prisma.pegawai.create({
-    data: {
-      ...pegawaiData,
-      ...(mataPelajaranId.length && {
-        mataPelajaran: {
-          create: mataPelajaranId.map((id) => ({ mataPelajaranId: id })),
-        },
-      }),
-    },
+  const response = await prisma.pegawai.create({
+    data,
     select,
   });
+
+  await uploadFile(fileName, req);
+
+  return response
 };
 
 const update = async (req, res) => {
-  const baseUrl = process.env.APP_URL;
-  const id = req.params.id;
+  const id = Number(req.params.id);
+  
+  const oldData = await prisma.pegawai.findUnique({where: id, select: {foto: true}});
+  const oldFoto = oldData.foto;
 
-  // ✅ Fix #3: kalau tidak ada file baru, JANGAN timpa foto lama (pakai undefined)
-  const fotoUrl = req.file
-    ? `${baseUrl}/api/v1/img/${req.file.filename}`
-    : undefined;
+  const data = { foto: oldFoto, ...req.body };
 
-  // ✅ Fix #4: jangan konversi mataPelajaranId ke Number (biarkan array)
-  const data = { ...(fotoUrl !== undefined && { foto: fotoUrl }), ...req.body };
+  const selectFields = Object.keys(data).reduce((acc, key) => {
+    acc[key] = true;
+    return acc;
+  }, {});
 
-  await getById(id);
   await updateValidator(id, data);
 
-  // ✅ Fix #4: parse mataPelajaranId jadi array of number
-  const mataPelajaranId = parseMataPelajaran(data.mataPelajaranId);
-  const { mataPelajaranId: _, ...pegawaiData } = data;
-
-  return prisma.pegawai.update({
-    where: { id: Number(id) },
-    data: {
-      ...pegawaiData,
-      ...(mataPelajaranId.length && {
-        mataPelajaran: {
-          deleteMany: {},
-          create: mataPelajaranId.map((mid) => ({ mataPelajaranId: mid })),
-        },
-      }),
-    },
-    select,
+  const response = await prisma.pegawai.update({
+    where: id,
+    data,
+    select: selectFields,
   });
+
+  await uploadFile(oldFoto, req);
+
+  return response;
 };
 
 const remove = async (id) => {
-  await getById(id);
-  await prisma.pegawai.delete({ where: { id: Number(id) } });
+  const oldData = await prisma.pegawai.findUnique({where: {id: Number(id)}, select: {foto: true}});
+  const oldFoto = oldData.foto;
+
+  const response = await prisma.pegawai.delete({ where: { id: Number(id) } });
+  
+  await deleteFile(oldFoto);
+
+  return response;
 };
 
 module.exports = {
-  getMapel,
-  getJabatan,
   getAll,
   getById,
+  getMapel,
+  getJabatan,
   create,
   update,
   remove,

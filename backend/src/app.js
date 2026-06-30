@@ -25,7 +25,7 @@ app.use(
   }),
 );
 app.use(
-  "/api/",
+  "/",
   rateLimit({
     windowMs: Number(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
     max: Number(process.env.RATE_LIMIT_MAX) || 100,
@@ -37,22 +37,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 
 // Routes & Handler
-app.use(
-  "/api/v1/img",
-  (req, res, next) => {
-    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
-    next();
-  },
-  express.static("public/uploads/"),
-);
 app.use("/api/v1", routes);
 app.use(notFoundHandler);
 app.use(errorHandler);
 
 // Port
 app.listen(PORT, () => {
-  logger.info(`Server: http://localhost:${PORT}/api/v1`);
-  logger.info(`Env   : ${process.env.NODE_ENV || "development"}`);
+  logger.info(`Server running at http://localhost:${PORT}/api/v1`);
 });
 
 module.exports = app;
