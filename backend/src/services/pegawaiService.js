@@ -118,6 +118,11 @@ const create = async (req, res) => {
 
 const update = async (req, res) => {
   const oldData = await prisma.pegawai.findUnique({where: { id: Number(req.params.id) }, select: { foto: true }});
+
+  if(!oldData) {
+    throw { statusCode: 404, message: "Data pegawai tidak ditemukan" };
+  }
+  
   const oldFoto = oldData.foto;
 
   const data = { foto: oldFoto, ...req.body };
@@ -142,13 +147,16 @@ const update = async (req, res) => {
 
 const remove = async (id) => {
   const oldData = await prisma.pegawai.findUnique({where: {id: Number(id)}, select: {foto: true}});
+
+  if(!oldData) {
+    throw { statusCode: 404, message: "Data pegawai tidak ditemukan" };
+  }
+
   const oldFoto = oldData.foto;
 
   const response = await prisma.pegawai.delete({ where: { id: Number(id) } });
   
   await deleteFile(oldFoto);
-
-  return response;
 };
 
 module.exports = {

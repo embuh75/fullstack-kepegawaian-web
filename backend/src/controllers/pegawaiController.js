@@ -93,8 +93,10 @@ const update = async (req, res, next) => {
 const remove = async (req, res, next) => {
   try {
     const id = req.params.id;
-    const result = await pegawaiServices.remove(id);
-    const resp = response.success(res, result, "Data pegawai berhasil dihapus", 204);
+    
+    await pegawaiServices.remove(id);
+    
+    const resp = response.success(res, null, "Data pegawai berhasil dihapus", 204);
     
     return resp;
   } catch (err) {
