@@ -155,11 +155,11 @@ const remove = async (id) => {
 
   const oldFoto = oldData.foto;
 
-  await prisma.pegawai.delete({ where: { id: Number(id) }, select: {id: true, nama: true, noKTP: true} });
+  const result = await prisma.pegawai.delete({ where: { id: Number(id) }, select: {id: true, nama: true, noKTP: true} });
   
   await deleteFile(oldFoto);
 
-  return;
+  return result;
 };
 
 module.exports = {
