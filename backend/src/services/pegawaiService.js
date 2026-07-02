@@ -158,6 +158,8 @@ const remove = async (id) => {
   await prisma.pegawai.delete({ where: { id: Number(id) }, select: {id: true, nama: true, noKTP: true} });
   
   await deleteFile(oldFoto);
+
+  return;
 };
 
 module.exports = {
