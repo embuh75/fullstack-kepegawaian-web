@@ -21,6 +21,7 @@ export default function PegawaiListPage() {
   const [error, setError] = useState("");
   const [deleteTarget, setDeleteTarget] = useState(null); // { id, nama }
   const [deleting, setDeleting] = useState(false);
+  // eslint-disable-next-line no-unused-vars
   const [jabatans, setJabatans] = useState(null);
 
   const hasPermission = useAuthStore((s) => s.hasPermission);
@@ -166,7 +167,7 @@ export default function PegawaiListPage() {
             className="w-full rounded-lg border border-slate-300 dark:border-[#2A3554] bg-white dark:bg-[#141A30] text-slate-800 dark:text-slate-100 pl-9 pr-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition placeholder:text-slate-400"
           />
         </div>
-        <select
+        {/* <select
           value={jabatanId}
           onChange={(e) => setJabatanId(e.target.value)}
           className="rounded-lg border border-slate-300 dark:border-[#2A3554] bg-white dark:bg-[#141A30] text-slate-800 dark:text-slate-100 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
@@ -177,7 +178,7 @@ export default function PegawaiListPage() {
               {j.nama}
             </option>
           ))}
-        </select>
+        </select> */}
         <button
           type="submit"
           className="rounded-lg bg-slate-800 dark:bg-indigo-600 text-white text-sm font-medium px-4 py-2.5 hover:bg-slate-900 dark:hover:bg-indigo-700 transition"
