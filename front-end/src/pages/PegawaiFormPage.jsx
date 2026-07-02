@@ -129,7 +129,7 @@ export default function PegawaiFormPage() {
       e.noNBM = "Nomor NBM maksimal 20 karakter";
 
     if (form.foto.size > 10 * 1024 * 1024) {
-      e.foto = "File foto terlalu besar! (max: 10mb)";
+      e.foto = "File foto terlalu besar! (max: 1MB)";
     }
 
     if (!form.tempatLahir.trim()) e.tempatLahir = "Tempat lahir wajib diisi";
@@ -317,7 +317,7 @@ export default function PegawaiFormPage() {
               className={`${inputClass(errors.noNBM)} font-tabular`}
             />
           </Field>
-          <Field label="Foto (max: 10mb)" error={errors.foto}>
+          <Field label="Foto (max: 1MB)" error={errors.foto}>
             <input
               type="file"
               onChange={(e) => handleChange("foto", e.target.files[0])}

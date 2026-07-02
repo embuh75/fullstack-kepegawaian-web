@@ -146,6 +146,7 @@ const update = async (req, res) => {
 };
 
 const remove = async (id) => {
+  
   const oldData = await prisma.pegawai.findUnique({where: {id: Number(id)}, select: {foto: true}});
 
   if(!oldData) {
@@ -154,9 +155,11 @@ const remove = async (id) => {
 
   const oldFoto = oldData.foto;
 
-  const response = await prisma.pegawai.delete({ where: { id: Number(id) } });
+  const response = await prisma.pegawai.delete({ where: { id: Number(id) }, select: {id: true, nama: true, noKTP: true} });
   
   await deleteFile(oldFoto);
+
+  return response;
 };
 
 module.exports = {
