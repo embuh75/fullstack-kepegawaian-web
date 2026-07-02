@@ -94,7 +94,7 @@ const remove = async (req, res, next) => {
     
     const result = await pegawaiServices.remove(id);
 
-    res.status(204).json({ success: true, message: "Data pegawai berhasil dihapus", pegawai: result });
+    res.status(204).json({ success: true, message: "Data pegawai berhasil dihapus" });
 
   } catch (err) {
     next(err);
