@@ -1,0 +1,49 @@
+# Dependencies
+vendor/
+
+# Environment & Credentials
+.env
+.env.local
+.env.production
+
+# Storage (uploads user, jangan ikut commit)
+storage/uploads/*
+!storage/uploads/.gitkeep
+storage/logs/*
+!storage/logs/.gitkeep
+storage/cache/*
+!storage/cache/.gitkeep
+
+# Public uploads (file upload user)
+public/uploads/berkas/*
+public/uploads/foto/*
+!public/uploads/berkas/.gitkeep
+public/uploads/galeri/*
+!public/uploads/galeri/.gitkeep
+public/uploads/testimoni/*
+!public/uploads/testimoni/.gitkeep
+
+# Logs
+*.log
+error_log
+access_log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Composer
+composer.phar
+composer.lock
+
+# Testing/debug files
+*_temp.php
+test_*.php
+reset_*.php
+generate_*.php
+debug_*.php
+check_*.php
