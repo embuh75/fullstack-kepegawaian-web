@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
+import {
+  Link,
+  NavLink,
+  Outlet,
+  useNavigate,
+  useLocation,
+} from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import Avatar from "./ui/Avatar";
 import ConfirmDialog from "./ui/ConfirmDialog";
@@ -8,6 +14,7 @@ import {
   IconBriefcase,
   IconBook,
   IconUsers,
+  IconUser,
   IconLogout,
   IconMenu,
   IconX,
@@ -33,7 +40,9 @@ export default function Layout() {
     navigate("/login");
   }
 
-  const activeLabel = NAV_ITEMS.find((n) => location.pathname.startsWith(n.to))?.label ?? "Dashboard";
+  const activeLabel =
+    NAV_ITEMS.find((n) => location.pathname.startsWith(n.to))?.label ??
+    "Dashboard";
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -45,7 +54,10 @@ export default function Layout() {
       {/* Sidebar - mobile drawer */}
       {mobileOpen && (
         <div className="fixed inset-0 z-40 lg:hidden">
-          <div className="fixed inset-0 bg-slate-900/50" onClick={() => setMobileOpen(false)} />
+          <div
+            className="fixed inset-0 bg-slate-900/50"
+            onClick={() => setMobileOpen(false)}
+          />
           <aside className="fixed inset-y-0 left-0 flex w-72 max-w-[85%] animate-fade-in flex-col bg-white shadow-2xl">
             <div className="flex justify-end p-3">
               <button
@@ -78,18 +90,30 @@ export default function Layout() {
               <IconMenu size={20} />
             </button>
             <div>
-              <h1 className="text-lg font-bold text-slate-800">{activeLabel}</h1>
-              <p className="hidden text-xs text-slate-400 sm:block">Sistem Informasi Kepegawaian SMA</p>
+              <h1 className="text-lg font-bold text-slate-800">
+                {activeLabel}
+              </h1>
+              <p className="hidden text-xs text-slate-400 sm:block">
+                Sistem Informasi Kepegawaian SMA
+              </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <Link
+            to="/profile"
+            aria-label="Buka profil saya"
+            className="flex min-w-0 items-center gap-3 rounded-lg p-1.5 transition hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+          >
             <div className="hidden text-right sm:block">
-              <p className="text-sm font-semibold leading-tight text-slate-700">{user?.nama}</p>
-              <p className="text-xs capitalize leading-tight text-slate-400">{user?.role}</p>
+              <p className="text-sm font-semibold leading-tight text-slate-700">
+                {user?.nama}
+              </p>
+              <p className="text-xs capitalize leading-tight text-slate-400">
+                {user?.role}
+              </p>
             </div>
             <Avatar name={user?.nama} size={38} />
-          </div>
+          </Link>
         </header>
 
         <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">
@@ -119,8 +143,12 @@ function SidebarContent({ user, onLogout, onNavigate }) {
           <IconShield size={20} />
         </div>
         <div className="min-w-0">
-          <p className="truncate text-sm font-extrabold leading-tight text-slate-800">SMA Muhammadiyah</p>
-          <p className="truncate text-xs text-slate-400">Sokaraja &middot; Kepegawaian</p>
+          <p className="truncate text-sm font-extrabold leading-tight text-slate-800">
+            SMA Muhammadiyah
+          </p>
+          <p className="truncate text-xs text-slate-400">
+            Sokaraja &middot; Kepegawaian
+          </p>
         </div>
       </div>
 
@@ -145,7 +173,11 @@ function SidebarContent({ user, onLogout, onNavigate }) {
                 )}
                 <Icon
                   size={18}
-                  className={isActive ? "text-brand-600" : "text-slate-400 group-hover:text-slate-500"}
+                  className={
+                    isActive
+                      ? "text-brand-600"
+                      : "text-slate-400 group-hover:text-slate-500"
+                  }
                 />
                 {label}
               </>
@@ -155,13 +187,23 @@ function SidebarContent({ user, onLogout, onNavigate }) {
       </nav>
 
       <div className="border-t border-slate-100 p-3">
-        <div className="mb-2 flex items-center gap-3 rounded-lg px-2 py-2">
-          <Avatar name={user?.nama} size={36} />
-          <div className="min-w-0">
-            <p className="truncate text-sm font-semibold text-slate-700">{user?.nama}</p>
-            <p className="truncate text-xs capitalize text-slate-400">{user?.email}</p>
+        <Link
+          to="/profile"
+          aria-label="Buka profil saya"
+          className="flex min-w-0 items-center gap-3 rounded-lg p-1.5 transition hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+        >
+          <div className="mb-2 flex items-center gap-3 rounded-lg px-2 py-2">
+            <Avatar name={user?.nama} size={36} />
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold text-slate-700">
+                {user?.nama}
+              </p>
+              <p className="truncate text-xs capitalize text-slate-400">
+                {user?.email}
+              </p>
+            </div>
           </div>
-        </div>
+        </Link>
         <button
           onClick={onLogout}
           className="flex w-full items-center gap-3 rounded-lg px-3.5 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-50"
