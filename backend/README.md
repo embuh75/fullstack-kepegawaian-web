@@ -53,6 +53,6 @@ Backend API untuk Sistem Penerimaan Murid Baru (SPMB) Online SMA Muhammadiyah So
 
 | Email | Password |
 |-------|----------|
-| `adminsma@gmail.com` | `admin1234` |
+| `admin@email.com` | `admin1234` |
 
 > ⚠️ **Segera ganti password admin** setelah pertama kali login.

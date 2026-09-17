@@ -9,48 +9,18 @@ namespace App\Controllers;
 
 use App\Helpers\Response;
 use App\Middleware\AuthMiddleware;
-use App\Middleware\RoleMiddleware;
 use App\Helpers\RakitValidator\AuthValidator;
 use App\Models\PenggunaModel;
 
 class AuthController
 {
     /**
-     * POST /api/auth/register
-     * Register (tambah pengguna)
-     */
-    public function register()
-    {
-        $user = AuthMiddleware::authenticate();
-        RoleMiddleware::isAdmin($user);
-
-        $pengguna = new PenggunaModel();
-
-        // Validasi input
-        $validator = new AuthValidator()->register($_POST);
-
-        if ($validator->fails()) {
-            Response::error('Validasi gagal.', $validator->errors()->firstOfAll(), 400);
-        }
-
-        // siapkan data dan masukan db
-        $data = $validator->getValidatedData();
-        $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
-        unset($data['confirm_password']);
-
-        $result = $pengguna->create($data);
-        unset($result['password']);
-
-        Response::success($result, 'Registrasi pengguna berhasil.');
-    }
-
-    /**
      * POST /api/auth/login
      * Login dan return JWT token
      */
     public function login(): void
     {
-        $data = json_decode(file_get_contents('php://input'),true) ?? [];
+        $data = json_decode(file_get_contents('php://input'), true) ?? [];
         // $data = $_POST;
 
         // Validasi input
@@ -156,37 +126,5 @@ class AuthController
         } catch (\Exception $e) {
             Response::error('Sesi tidak valid', null, 401);
         }
-    }
-
-
-    /* public function logout(): void
-    {
-        // Validasi token
-        AuthMiddleware::authenticate();
-
-        // Di versi awal, logout cukup di handle di sisi client
-        // dengan menghapus token dari localStorage
-        Response::success(null, 'Logout berhasil.');
-    } */
-
-    /**
-     * DEL /api/auth/delete
-     * Delete (hapus pengguna)
-     */
-    public function delete(int $id)
-    {
-        $user = AuthMiddleware::authenticate();
-        RoleMiddleware::isAdmin($user);
-
-        $model = new PenggunaModel();
-        $pengguna = $model->find($id);
-
-        if (!$pengguna) {
-            Response::error('Pengguna tidak ditemukan.', null, 404);
-        }
-
-        $model->destroy($id);
-
-        Response::success('Data jabatan berhasil dihapus.');
     }
 }

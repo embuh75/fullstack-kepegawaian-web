@@ -1,10 +1,14 @@
 <?php
 // Auth
 $router->post('/api/v1/auth/login', 'App\Controllers\AuthController', 'login');
-$router->post('/api/v1/auth/register', 'App\Controllers\AuthController', 'register');
-// $router->post('/api/v1/auth/logout', 'App\Controllers\AuthController', 'logout');
 $router->get('/api/v1/auth/me', 'App\Controllers\AuthController', 'me');
-$router->delete('/api/v1/auth/delete/{id}', 'App\Controllers\AuthController', 'delete');
+
+// User
+$router->post('/api/v1/user/register', 'App\Controllers\UserController', 'register');
+$router->get('/api/v1/user', 'App\Controllers\UserController', 'index');
+$router->get('/api/v1/user/{id}', 'App\Controllers\UserController', 'find');
+// $router->post('/api/v1/user/{id}', 'App\Controllers\UserController', 'update');
+$router->delete('/api/v1/user/delete/{id}', 'App\Controllers\UserController', 'delete');
 
 // Jabatan
 $router->post('api/v1/jabatan', 'App\Controllers\JabatanController', 'store');
