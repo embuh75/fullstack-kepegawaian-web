@@ -90,7 +90,7 @@ class JabatanController
         if (!$model) Response::error('Data jabatan tidak ditemukan.', null, 404);
 
         // validasi input
-        [$data] = request_parse_body();
+        $data = json_decode(file_get_contents('php://input'),true) ?? [];
         $validator = new JabatanValidator()->update($data, $id);
 
         if ($validator->fails()) {

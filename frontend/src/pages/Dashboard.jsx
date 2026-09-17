@@ -86,15 +86,6 @@ export default function Dashboard() {
             Berikut ringkasan data kepegawaian SMA Muhammadiyah Sokaraja hari ini.
           </p>
         </div>
-        {isAdmin && (
-          <Link
-            to="/pegawai"
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-brand-700 shadow-sm transition hover:bg-brand-50"
-          >
-            <IconPlus size={17} />
-            Tambah Pegawai
-          </Link>
-        )}
       </div>
 
       {error && (

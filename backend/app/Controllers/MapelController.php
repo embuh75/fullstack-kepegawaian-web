@@ -19,15 +19,16 @@ class MapelController
         RoleMiddleware::isAdmin($user);
 
         // Validasi input
-        $validator = new MapelValidator()->create($_POST);
+        $data = json_decode(file_get_contents('php://input'),true) ?? [];
+        $validator = new MapelValidator()->create($data);
 
         if ($validator->fails()) {
             Response::error('Validasi gagal.', $validator->errors()->firstOfAll());
         }
 
-        $data = $validator->getValidatedData();
+        $dataValidated = $validator->getValidatedData();
 
-        $mapel = MapelModel::create($data);
+        $mapel = MapelModel::create($dataValidated);
 
         Response::success($mapel, 'Data mapel berhasil ditambahkan.');
     }
@@ -89,7 +90,7 @@ class MapelController
         if (!$model) Response::error('Data mapel tidak ditemukan.', null, 404);
 
         // validasi
-        [$data] = request_parse_body();
+        $data = json_decode(file_get_contents('php://input'),true) ?? [];
         $validator = new MapelValidator()->update($data, $id);
 
         if ($validator->fails()) {
@@ -97,8 +98,8 @@ class MapelController
         }
 
         // proses ke db dan lempar response
-        $data = $validator->getValidatedData();
-        $model->update($data);
+        $dataValidated = $validator->getValidatedData();
+        $model->update($dataValidated);
         $result = $model->refresh();
 
         Response::success($result, 'Data mapel berhasil diperbarui.');
