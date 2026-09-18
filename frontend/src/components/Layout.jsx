@@ -198,7 +198,7 @@ function SidebarContent({ user, onLogout, onNavigate }) {
               <p className="truncate text-sm font-semibold text-slate-700">
                 {user?.nama}
               </p>
-              <p className="truncate text-xs capitalize text-slate-400">
+              <p className="truncate text-xs lowercase text-slate-400">
                 {user?.email}
               </p>
             </div>

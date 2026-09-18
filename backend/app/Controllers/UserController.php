@@ -152,7 +152,7 @@ class UserController
         [$data, $_FILES] = request_parse_body();
 
         // cari pegawai yang mau diupdate
-        $pengguna = PenggunaModel::with(['jabatan', 'mapel'])->find($id);
+        $pengguna = PenggunaModel::find($id);
         if (!$pengguna) Response::error('Data pegawai tidak ditemukan.', null, 404);
 
         // Validasi
