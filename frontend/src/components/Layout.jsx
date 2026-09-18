@@ -26,6 +26,7 @@ const NAV_ITEMS = [
   { to: "/pegawai", label: "Data Pegawai", icon: IconUsers },
   { to: "/jabatan", label: "Jabatan", icon: IconBriefcase },
   { to: "/mapel", label: "Mata Pelajaran", icon: IconBook },
+  { to: "/pengguna", label: "Pengguna", icon: IconUser },
 ];
 
 export default function Layout() {
@@ -138,6 +139,7 @@ export default function Layout() {
 function SidebarContent({ user, onLogout, onNavigate }) {
   return (
     <>
+      {/* Banner */}
       <div className="flex items-center gap-3 border-b border-slate-100 px-5 py-5">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-600 text-white shadow-sm shadow-brand-600/30">
           <IconShield size={20} />
@@ -152,6 +154,7 @@ function SidebarContent({ user, onLogout, onNavigate }) {
         </div>
       </div>
 
+      {/* Menu */}
       <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
         {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
           <NavLink

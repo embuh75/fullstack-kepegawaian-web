@@ -10,6 +10,7 @@ import Jabatan from "./pages/Jabatan";
 import Mapel from "./pages/Mapel";
 import Pegawai from "./pages/Pegawai";
 import Profile from "./pages/Profile";
+import Pengguna from "./pages/Pengguna";
 
 export default function App() {
   return (
@@ -26,6 +27,7 @@ export default function App() {
                 <Route path="/mapel" element={<Mapel />} />
                 <Route path="/pegawai" element={<Pegawai />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/pengguna" element={<Pengguna />} />
               </Route>
             </Route>
 

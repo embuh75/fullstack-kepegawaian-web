@@ -46,6 +46,10 @@ export default function Profile() {
 
   const status = getAccountStatus(profile?.status_aktif);
 
+  const handleUpdate = (e) => {
+    e.preventDefault();
+  };
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -148,7 +152,7 @@ export default function Profile() {
           </section>
 
           {/* Ubah Profil */}
-          {/* <section
+          <section
             className="card min-w-0 lg:col-span-3"
             aria-labelledby="edit-profile-title"
           >
@@ -160,15 +164,17 @@ export default function Profile() {
                 Ubah Profil
               </h3>
               <p className="mt-1 text-xs text-slate-500">
-                Perbarui nama lengkap dan alamat email akun Anda.
+                Perbarui informasi akun Anda.
               </p>
             </div>
 
             <form
+              encType="multipart/form-data"
               className="space-y-5 p-5 sm:p-6"
-              onSubmit={(e) => e.preventDefault()}
+              onSubmit={handleUpdate}
             >
               <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                {/* Nama */}
                 <div>
                   <label htmlFor="profile-nama" className="field-label">
                     Nama Lengkap
@@ -177,14 +183,14 @@ export default function Profile() {
                     id="profile-nama"
                     name="nama"
                     type="text"
-                    className="input-field"
-                    defaultValue={profile.nama ?? ""}
+                    defaultValue={profile?.nama ?? ""}
                     placeholder="Masukkan nama lengkap"
                     autoComplete="name"
-                    required
+                    className="input-field"
                   />
                 </div>
 
+                {/* Email */}
                 <div>
                   <label htmlFor="profile-email" className="field-label">
                     Alamat Email
@@ -193,11 +199,112 @@ export default function Profile() {
                     id="profile-email"
                     name="email"
                     type="email"
-                    className="input-field"
-                    defaultValue={profile.email ?? ""}
-                    placeholder="Masukkan alamat email"
+                    defaultValue={profile?.email ?? ""}
+                    placeholder="nama@email.com"
                     autoComplete="email"
-                    required
+                    className="input-field"
+                  />
+                </div>
+
+                {/* Foto */}
+                <div className="sm:col-span-2">
+                  <label htmlFor="profile-foto" className="field-label">
+                    Foto Profil
+                  </label>
+
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+                    <Avatar
+                      name={profile?.nama ?? ""}
+                      src={profile?.foto?.path}
+                      size={72}
+                    />
+
+                    <div className="min-w-0 flex-1">
+                      <input
+                        id="profile-foto"
+                        name="foto"
+                        type="file"
+                        accept="image/*"
+                        className="input-field"
+                      />
+                      <p className="mt-1.5 text-xs text-slate-400">
+                        Pilih foto baru jika ingin mengganti foto profil.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* WhatsApp */}
+                <div>
+                  <label htmlFor="profile-whatsapp" className="field-label">
+                    Nomor WhatsApp
+                  </label>
+                  <input
+                    id="profile-whatsapp"
+                    name="whatsapp"
+                    type="tel"
+                    defaultValue={profile?.whatsapp ?? ""}
+                    placeholder="Contoh: 081234567890"
+                    autoComplete="tel"
+                    className="input-field"
+                  />
+                </div>
+
+                {/* Role */}
+                <div>
+                  <label htmlFor="profile-role" className="field-label">
+                    Peran
+                  </label>
+                  <select
+                    id="profile-role"
+                    name="role"
+                    defaultValue={profile?.role ?? "user"}
+                    className="input-field"
+                  >
+                    <option value="admin">Admin</option>
+                    <option value="user">User</option>
+                  </select>
+                </div>
+
+                {/* Password */}
+                <div>
+                  <label htmlFor="profile-password" className="field-label">
+                    Password Baru
+                  </label>
+                  <input
+                    id="profile-password"
+                    name="password"
+                    type="password"
+                    minLength={8}
+                    placeholder="Minimal 8 karakter"
+                    autoComplete="new-password"
+                    aria-describedby="profile-password-hint"
+                    className="input-field"
+                  />
+                  <p
+                    id="profile-password-hint"
+                    className="mt-1.5 text-xs text-slate-400"
+                  >
+                    Kosongkan jika tidak ingin mengganti password.
+                  </p>
+                </div>
+
+                {/* Konfirmasi password */}
+                <div>
+                  <label
+                    htmlFor="profile-confirm-password"
+                    className="field-label"
+                  >
+                    Konfirmasi Password Baru
+                  </label>
+                  <input
+                    id="profile-confirm-password"
+                    name="confirm_password"
+                    type="password"
+                    minLength={8}
+                    placeholder="Ulangi password baru"
+                    autoComplete="new-password"
+                    className="input-field"
                   />
                 </div>
               </div>
@@ -211,7 +318,7 @@ export default function Profile() {
                 </button>
               </div>
             </form>
-          </section> */}
+          </section>
         </div>
       )}
     </div>

@@ -101,7 +101,8 @@ class AuthController
                         'path' => $_ENV['APP_URL'] . '/uploads/pengguna/' . $pengguna['foto']
                     ] : null,
                 'email'        => $pengguna['email'],
-                'role'         => $pengguna['role']
+                'role'         => $pengguna['role'],
+                'status_aktif' => $pengguna['status_aktif']
             ]
         ], 'Login berhasil.');
     }
