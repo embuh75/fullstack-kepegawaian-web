@@ -8,5 +8,5 @@ class PenggunaModel extends Model
 {
     protected $table = 'pengguna';
 
-    protected $fillable = ['nama', 'email', 'whatsapp', 'password', 'role'];
+    protected $fillable = ['nama', 'foto', 'email', 'whatsapp', 'password', 'role'];
 }

@@ -88,7 +88,8 @@ export default function Profile() {
             <div className="h-20 bg-gradient-to-r from-brand-700 to-brand-500" />
             <div className="flex flex-col items-center px-6 pb-6 text-center">
               <Avatar
-                name={profile.nama || ""}
+                name={profile?.nama || ""}
+                src={profile?.foto?.path}
                 size={88}
                 className="-mt-11 ring-4"
               />

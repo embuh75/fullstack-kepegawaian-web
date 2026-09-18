@@ -112,7 +112,7 @@ export default function Layout() {
                 {user?.role}
               </p>
             </div>
-            <Avatar name={user?.nama} size={38} />
+            <Avatar src={user?.foto?.path} name={user?.nama} size={38} />
           </Link>
         </header>
 
@@ -193,7 +193,7 @@ function SidebarContent({ user, onLogout, onNavigate }) {
           className="flex min-w-0 items-center gap-3 rounded-lg p-1.5 transition hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
         >
           <div className="mb-2 flex items-center gap-3 rounded-lg px-2 py-2">
-            <Avatar name={user?.nama} size={36} />
+            <Avatar src={user?.foto?.path} name={user?.nama} size={36} />
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold text-slate-700">
                 {user?.nama}

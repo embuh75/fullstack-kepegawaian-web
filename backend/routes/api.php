@@ -7,7 +7,7 @@ $router->get('/api/v1/auth/me', 'App\Controllers\AuthController', 'me');
 $router->post('/api/v1/user/register', 'App\Controllers\UserController', 'register');
 $router->get('/api/v1/user', 'App\Controllers\UserController', 'index');
 $router->get('/api/v1/user/{id}', 'App\Controllers\UserController', 'find');
-// $router->post('/api/v1/user/{id}', 'App\Controllers\UserController', 'update');
+$router->patch('/api/v1/user/{id}', 'App\Controllers\UserController', 'update');
 $router->delete('/api/v1/user/delete/{id}', 'App\Controllers\UserController', 'delete');
 
 // Jabatan

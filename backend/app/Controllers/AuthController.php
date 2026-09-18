@@ -95,6 +95,11 @@ class AuthController
             'user'  => [
                 'id'           => $pengguna['id'],
                 'nama'         => $pengguna['nama'],
+                'foto' => $pengguna['foto'] ?
+                    [
+                        'fileName' => $pengguna['foto'],
+                        'path' => $_ENV['APP_URL'] . '/uploads/pengguna/' . $pengguna['foto']
+                    ] : null,
                 'email'        => $pengguna['email'],
                 'role'         => $pengguna['role']
             ]
@@ -116,6 +121,11 @@ class AuthController
                 'user' => [
                     'id' => $user['id'],
                     'nama' => $user['nama'],
+                    'foto' => $user['foto'] ?
+                        [
+                            'fileName' => $user['foto'],
+                            'path' => $_ENV['APP_URL'] . '/uploads/pengguna/' . $user['foto']
+                        ] : null,
                     'email' => $user['email'],
                     'role' => $user['role'],
                     'status_aktif' => $user['status_aktif']

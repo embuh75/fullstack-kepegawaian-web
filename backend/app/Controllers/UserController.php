@@ -12,6 +12,7 @@ use App\Middleware\AuthMiddleware;
 use App\Middleware\RoleMiddleware;
 use App\Helpers\RakitValidator\AuthValidator;
 use App\Models\PenggunaModel;
+use App\Helpers\Upload;
 
 class UserController
 {
@@ -35,6 +36,12 @@ class UserController
 
         // siapkan data dan masukan db
         $data = $validator->getValidatedData();
+
+        if ($_FILES) {
+            $upload = new Upload()->uploadImage('foto', 'pengguna');
+            $data['foto'] = $upload['fileName'];
+        }
+
         $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
         unset($data['confirm_password']);
 
@@ -81,7 +88,7 @@ class UserController
             if ($item['foto']) {
                 $item['foto'] = [
                     'fileName' => $item['foto'],
-                    'path' => $_ENV['APP_URL'] . '/uploads/foto/pengguna/' . $item['foto']
+                    'path' => $_ENV['APP_URL'] . '/uploads/pengguna/' . $item['foto']
                 ];
             }
 
@@ -137,7 +144,7 @@ class UserController
         Response::success($user, 'Data pegawai berhasil ditemukan.');
     }
 
-    /* public function update(int $id)
+    public function update(int $id)
     {
         $user = AuthMiddleware::authenticate();
         RoleMiddleware::isAdmin($user);
@@ -145,11 +152,11 @@ class UserController
         [$data, $_FILES] = request_parse_body();
 
         // cari pegawai yang mau diupdate
-        $pegawais = PenggunaModel::with(['jabatan', 'mapel'])->find($id);
-        if (!$pegawais) Response::error('Data pegawai tidak ditemukan.', null, 404);
+        $pengguna = PenggunaModel::with(['jabatan', 'mapel'])->find($id);
+        if (!$pengguna) Response::error('Data pegawai tidak ditemukan.', null, 404);
 
         // Validasi
-        $validator = new AuthValidator()->register($_POST);
+        $validator = new AuthValidator()->update($data, $id);
 
         if ($validator->fails()) {
             Response::error('Validasi gagal.', $validator->errors()->firstOfAll());
@@ -160,11 +167,11 @@ class UserController
         // update gambar jika ada dan masukin ke db
         if ($_FILES) {
 
-            if ($pegawais['foto']) {
-                Upload::deleteFile('uploads/foto/' . $pegawais['foto']);
+            if ($pengguna['foto']) {
+                Upload::deleteFile('uploads/foto/' . $pengguna['foto']);
             }
 
-            $fileName = new Upload()->uploadImage('foto', 'foto');
+            $fileName = new Upload()->uploadImage('foto', 'pengguna');
 
             if (!$fileName['success'] == true) {
                 Response::error('Validasi foto gagal.', $fileName['error']);
@@ -173,10 +180,10 @@ class UserController
             $validatedData['foto'] = $fileName['fileName'];
         }
 
-        $pegawais->update($validatedData);
+        $pengguna->update($validatedData);
 
         Response::success($validatedData, 'Data pegawai berhasil diperbarui.');
-    } */
+    }
 
     /**
      * DEL /api/auth/delete
