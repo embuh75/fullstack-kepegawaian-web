@@ -1,66 +1,111 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import {
-  store,
-  index,
-  find,
-  update,
-  destroy,
-} from "../services/penggunaService";
+import { createContext, useContext, useCallback, useState } from "react";
+import { store, index, find, update, destroy } from "../services/penggunaService";
 
 const PenggunaContext = createContext(null);
 
 export function PenggunaProvider({ children }) {
-  async function daftar(data) {
-    try {
-      const pengguna = await store(data);
-      return pengguna;
-    } catch (error) {
-      throw error;
-    }
-  }
+  const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  async function penggunas() {
+  // 1. Ambil Semua User (index)
+  const getUsers = useCallback(async () => {
+    setLoading(true);
+    setError(null);
     try {
-      const pengguna = await index();
-      return pengguna;
-    } catch (error) {
-      throw error;
+      const data = await userService.index();
+      setUsers(data);
+      return data;
+    } catch (err) {
+      setError(err.response?.data?.message || err.message);
+      throw err;
+    } finally {
+      setLoading(false);
     }
-  }
+  }, []);
 
-  async function pengguna(id) {
+  // 2. Ambil Detail User berdasarkan ID (find)
+  const getUserById = useCallback(async (id) => {
+    setLoading(true);
+    setError(null);
     try {
-      const pengguna = await find(id);
-      return pengguna;
-    } catch (error) {
-      throw error;
+      const data = await userService.find(id);
+      setSelectedUser(data);
+      return data;
+    } catch (err) {
+      setError(err.response?.data?.message || err.message);
+      throw err;
+    } finally {
+      setLoading(false);
     }
-  }
+  }, []);
 
-  async function perbarui(id, data) {
+  // 3. Tambah User Baru (store)
+  const createUser = async (data) => {
+    setLoading(true);
+    setError(null);
     try {
-      const pengguna = await update(id, data);
-      return pengguna;
-    } catch (error) {
-      throw error;
+      const newUser = await userService.store(data);
+      setUsers((prev) => [...prev, newUser]);
+      return newUser;
+    } catch (err) {
+      setError(err.response?.data?.message || err.message);
+      throw err;
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
-  async function hapus(id) {
+  // 4. Update Data User (update)
+  const updateUser = async (id, data) => {
+    setLoading(true);
+    setError(null);
     try {
-      const pengguna = await destroy(id);
-      return pengguna;
-    } catch (error) {
-      throw error;
+      const updatedUser = await userService.update(id, data);
+      setUsers((prev) =>
+        prev.map((user) => (user.id === id ? updatedUser : user)),
+      );
+      if (selectedUser?.id === id) {
+        setSelectedUser(updatedUser);
+      }
+      return updatedUser;
+    } catch (err) {
+      setError(err.response?.data?.message || err.message);
+      throw err;
+    } finally {
+      setLoading(false);
     }
-  }
+  };
+
+  // 5. Hapus User (destroy)
+  const deleteUser = async (id) => {
+    setLoading(true);
+    setError(null);
+    try {
+      await userService.destroy(id);
+      setUsers((prev) => prev.filter((user) => user.id !== id));
+      if (selectedUser?.id === id) {
+        setSelectedUser(null);
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const value = {
-    daftar,
-    penggunas,
-    pengguna,
-    perbarui,
-    hapus,
+    users,
+    selectedUser,
+    loading,
+    error,
+    getUsers,
+    getUserById,
+    createUser,
+    updateUser,
+    deleteUser,
   };
 
   return (

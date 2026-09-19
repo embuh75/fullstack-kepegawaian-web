@@ -168,7 +168,7 @@ class UserController
         if ($_FILES) {
 
             if ($pengguna['foto']) {
-                Upload::deleteFile('uploads/foto/' . $pengguna['foto']);
+                Upload::deleteFile('uploads/pengguna/' . $pengguna['foto']);
             }
 
             $fileName = new Upload()->uploadImage('foto', 'pengguna');

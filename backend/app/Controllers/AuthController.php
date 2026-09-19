@@ -128,6 +128,7 @@ class AuthController
                             'path' => $_ENV['APP_URL'] . '/uploads/pengguna/' . $user['foto']
                         ] : null,
                     'email' => $user['email'],
+                    'whatsapp' => $user['whatsapp'],
                     'role' => $user['role'],
                     'status_aktif' => $user['status_aktif']
                 ]

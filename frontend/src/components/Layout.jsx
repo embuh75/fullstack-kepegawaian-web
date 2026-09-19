@@ -26,7 +26,6 @@ const NAV_ITEMS = [
   { to: "/pegawai", label: "Data Pegawai", icon: IconUsers },
   { to: "/jabatan", label: "Jabatan", icon: IconBriefcase },
   { to: "/mapel", label: "Mata Pelajaran", icon: IconBook },
-  { to: "/pengguna", label: "Pengguna", icon: IconUser },
 ];
 
 export default function Layout() {
@@ -109,7 +108,7 @@ export default function Layout() {
               <p className="text-sm font-semibold leading-tight text-slate-700">
                 {user?.nama}
               </p>
-              <p className="text-xs capitalize leading-tight text-slate-400">
+              <p className="text-xs capitalize leading-tight text-green-700">
                 {user?.role}
               </p>
             </div>
@@ -197,11 +196,14 @@ function SidebarContent({ user, onLogout, onNavigate }) {
         >
           <div className="mb-2 flex items-center gap-3 rounded-lg px-2 py-2">
             <Avatar src={user?.foto?.path} name={user?.nama} size={36} />
-            <div className="min-w-0">
+            <div className="min-w-0 gap-2">
               <p className="truncate text-sm font-semibold text-slate-700">
                 {user?.nama}
               </p>
-              <p className="truncate text-xs lowercase text-slate-400">
+              <p className="truncate text-xs text-green-700">
+                {user?.role}
+              </p>
+              <p className="truncate text-xs lowercase text-blue-700">
                 {user?.email}
               </p>
             </div>

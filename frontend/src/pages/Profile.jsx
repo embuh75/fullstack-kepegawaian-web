@@ -1,5 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getMe } from "../services/authService";
+import { update as updatePengguna } from "../services/penggunaService";
+import { useToast } from "../context/ToastContext";
 import Avatar from "../components/ui/Avatar";
 import EmptyState from "../components/ui/EmptyState";
 import PageHeader from "../components/ui/PageHeader";
@@ -7,14 +9,20 @@ import {
   IconAlertTriangle,
   IconLoader,
   IconShield,
+  IconUpload,
   IconUser,
 } from "../components/icons";
 
 export default function Profile() {
+  const toast = useToast();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [attempt, setAttempt] = useState(0);
+  const [saving, setSaving] = useState(false);
+  const [fotoFile, setFotoFile] = useState(null);
+  const [fotoPreview, setFotoPreview] = useState(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     let ignore = false;
@@ -44,10 +52,86 @@ export default function Profile() {
     };
   }, [attempt]);
 
-  const status = getAccountStatus(profile?.status_aktif);
+  useEffect(() => {
+    if (!fotoFile) return;
 
-  const handleUpdate = (e) => {
+    const previewUrl = URL.createObjectURL(fotoFile);
+    setFotoPreview(previewUrl);
+    return () => URL.revokeObjectURL(previewUrl);
+  }, [fotoFile]);
+
+  const status = getAccountStatus(profile?.status_aktif);
+  const fotoSrc = fotoPreview || profile?.foto?.path;
+
+  function resetFotoState() {
+    setFotoFile(null);
+    setFotoPreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }
+
+  function handleFotoChange(e) {
+    const file = e.target.files?.[0];
+    if (!file) {
+      resetFotoState();
+      return;
+    }
+
+    const allowed = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+    if (!allowed.includes(file.type)) {
+      resetFotoState();
+      toast.error("Format foto harus JPG, PNG, WEBP, atau GIF.");
+      return;
+    }
+    if (file.size > 1024 * 1024) {
+      resetFotoState();
+      toast.error("Ukuran foto maksimal 1MB.");
+      return;
+    }
+
+    setFotoFile(file);
+  }
+
+  const handleUpdate = async (e) => {
     e.preventDefault();
+    if (saving) return;
+
+    if (profile?.id == null) {
+      toast.error("ID pengguna tidak tersedia.");
+      return;
+    }
+
+    const formData = new FormData(e.currentTarget);
+
+    // Sertakan foto hanya jika pengguna memilih file baru.
+    if (!fotoFile) formData.delete("foto");
+
+    const password = formData.get("password");
+    const confirmPassword = formData.get("confirm_password");
+    if (password !== confirmPassword) {
+      toast.error("Konfirmasi password tidak cocok.");
+      return;
+    }
+
+    // Password kosong berarti password lama tetap digunakan.
+    if (!password) {
+      formData.delete("password");
+      formData.delete("confirm_password");
+    }
+
+    setSaving(true);
+    try {
+      await updatePengguna(profile.id, formData);
+      toast.success("Profil berhasil diperbarui.");
+      resetFotoState();
+      setAttempt((value) => value + 1);
+    } catch (err) {
+      toast.error(
+        err.response?.data?.message ||
+          "Gagal memperbarui profil. Silakan coba lagi.",
+      );
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -85,6 +169,7 @@ export default function Profile() {
         </div>
       ) : (
         <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-3">
+          {/* Card Akun */}
           <section
             className="card min-w-0 overflow-hidden"
             aria-label="Ringkasan profil"
@@ -172,8 +257,12 @@ export default function Profile() {
               encType="multipart/form-data"
               className="space-y-5 p-5 sm:p-6"
               onSubmit={handleUpdate}
+              onReset={resetFotoState}
             >
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+              <fieldset
+                disabled={saving}
+                className="grid grid-cols-1 gap-5 sm:grid-cols-2"
+              >
                 {/* Nama */}
                 <div>
                   <label htmlFor="profile-nama" className="field-label">
@@ -212,23 +301,48 @@ export default function Profile() {
                     Foto Profil
                   </label>
 
-                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-                    <Avatar
-                      name={profile?.nama ?? ""}
-                      src={profile?.foto?.path}
-                      size={72}
-                    />
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-slate-100">
+                      {fotoSrc ? (
+                        <img
+                          src={fotoSrc}
+                          alt="Pratinjau foto profil"
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <IconUser
+                          size={28}
+                          className="text-slate-300"
+                          aria-hidden="true"
+                        />
+                      )}
+                    </div>
 
-                    <div className="min-w-0 flex-1">
+                    <div className="min-w-0">
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        aria-describedby="profile-foto-hint"
+                        className="btn-secondary !py-2 text-xs"
+                      >
+                        <IconUpload size={14} aria-hidden="true" />
+                        {fotoSrc ? "Ganti Foto" : "Unggah Foto"}
+                      </button>
                       <input
+                        ref={fileInputRef}
                         id="profile-foto"
                         name="foto"
                         type="file"
-                        accept="image/*"
-                        className="input-field"
+                        accept="image/jpeg,image/png,image/webp,image/gif"
+                        onChange={handleFotoChange}
+                        aria-describedby="profile-foto-hint"
+                        className="hidden"
                       />
-                      <p className="mt-1.5 text-xs text-slate-400">
-                        Pilih foto baru jika ingin mengganti foto profil.
+                      <p
+                        id="profile-foto-hint"
+                        className="mt-1.5 text-xs text-slate-400"
+                      >
+                        JPG, PNG, WEBP, atau GIF. Maks 1MB.
                       </p>
                     </div>
                   </div>
@@ -307,14 +421,19 @@ export default function Profile() {
                     className="input-field"
                   />
                 </div>
-              </div>
+              </fieldset>
 
               <div className="flex justify-end gap-3 border-t border-slate-100 pt-5">
-                <button type="reset" className="btn-secondary">
+                <button
+                  type="reset"
+                  disabled={saving}
+                  className="btn-secondary"
+                >
                   Reset
                 </button>
-                <button type="submit" className="btn-primary">
-                  Simpan Perubahan
+                <button type="submit" disabled={saving} className="btn-primary">
+                  {saving && <IconLoader size={16} aria-hidden="true" />}
+                  {saving ? "Menyimpan..." : "Simpan Perubahan"}
                 </button>
               </div>
             </form>

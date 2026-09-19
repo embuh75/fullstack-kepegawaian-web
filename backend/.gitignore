@@ -22,6 +22,7 @@ public/uploads/galeri/*
 !public/uploads/galeri/.gitkeep
 public/uploads/testimoni/*
 !public/uploads/testimoni/.gitkeep
+public/uploads/pengguna/*
 
 # Logs
 *.log

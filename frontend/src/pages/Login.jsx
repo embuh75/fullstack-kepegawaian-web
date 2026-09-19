@@ -1,16 +1,36 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { IconShield, IconMail, IconLoader, IconEye, IconAlertTriangle, IconUsers, IconBriefcase, IconBook } from "../components/icons";
+
+import {
+  IconShield,
+  IconMail,
+  IconLoader,
+  IconEye,
+  IconAlertTriangle,
+  IconUsers,
+  IconBriefcase,
+  IconBook,
+} from "../components/icons";
+import Loading from "../components/ui/Loading";
 
 export default function Login() {
+  const { login, loading: loadingUser, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
-  const navigate = useNavigate();
+
+  if (loadingUser) {
+    return <Loading />;
+  }
+
+  if (isAuthenticated) {
+    navigate("/dashboard", { replace: true });
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -29,9 +49,14 @@ export default function Login() {
       if (err.code === "ECONNABORTED") {
         setError("Server terlalu lama merespons. Coba lagi.");
       } else if (!err.response) {
-        setError("Tidak dapat terhubung ke server. Periksa koneksi backend Anda.");
+        setError(
+          "Tidak dapat terhubung ke server. Periksa koneksi backend Anda.",
+        );
       } else {
-        setError(err.response?.data?.message || "Login gagal. Periksa email dan password Anda.");
+        setError(
+          err.response?.data?.message ||
+            "Login gagal. Periksa email dan password Anda.",
+        );
       }
     } finally {
       setLoading(false);
@@ -67,8 +92,8 @@ export default function Login() {
             Kepegawaian Sekolah
           </h1>
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-brand-100">
-            Kelola data guru, tenaga kependidikan, jabatan, dan mata pelajaran dalam satu
-            platform yang rapi, cepat, dan aman.
+            Kelola data guru, tenaga kependidikan, jabatan, dan mata pelajaran
+            dalam satu platform yang rapi, cepat, dan aman.
           </p>
 
           <div className="mt-10 grid grid-cols-3 gap-4">
@@ -77,7 +102,10 @@ export default function Login() {
               { icon: IconBriefcase, label: "Jabatan" },
               { icon: IconBook, label: "Mata Pelajaran" },
             ].map(({ icon: Icon, label }) => (
-              <div key={label} className="rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur">
+              <div
+                key={label}
+                className="rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur"
+              >
                 <Icon size={20} className="text-brand-200" />
                 <p className="mt-2 text-xs font-semibold text-white">{label}</p>
               </div>
@@ -86,7 +114,8 @@ export default function Login() {
         </div>
 
         <p className="relative text-xs text-brand-300">
-          &copy; {new Date().getFullYear()} SMA Muhammadiyah Sokaraja. Seluruh hak cipta dilindungi.
+          &copy; {new Date().getFullYear()} SMA Muhammadiyah Sokaraja. Seluruh
+          hak cipta dilindungi.
         </p>
       </div>
 
@@ -98,12 +127,18 @@ export default function Login() {
               <IconShield size={20} />
             </div>
             <div>
-              <p className="text-sm font-extrabold leading-tight text-slate-800">SMA Muhammadiyah</p>
-              <p className="text-xs text-slate-400">Sokaraja &middot; Kepegawaian</p>
+              <p className="text-sm font-extrabold leading-tight text-slate-800">
+                SMA Muhammadiyah
+              </p>
+              <p className="text-xs text-slate-400">
+                Sokaraja &middot; Kepegawaian
+              </p>
             </div>
           </div>
 
-          <h2 className="text-2xl font-extrabold text-slate-800">Selamat datang kembali</h2>
+          <h2 className="text-2xl font-extrabold text-slate-800">
+            Selamat datang kembali
+          </h2>
           <p className="mt-1.5 text-sm text-slate-500">
             Masuk untuk mengelola data kepegawaian sekolah.
           </p>
@@ -119,7 +154,10 @@ export default function Login() {
             <div>
               <label className="field-label">Email</label>
               <div className="relative">
-                <IconMail size={17} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                <IconMail
+                  size={17}
+                  className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+                />
                 <input
                   type="email"
                   value={email}
@@ -155,14 +193,19 @@ export default function Login() {
               </div>
             </div>
 
-            <button type="submit" disabled={loading} className="btn-primary w-full !py-3">
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-primary w-full !py-3"
+            >
               {loading && <IconLoader size={16} />}
               {loading ? "Memproses..." : "Masuk"}
             </button>
           </form>
 
           <p className="mt-8 text-center text-xs text-slate-400">
-            Hubungi administrator sekolah jika Anda mengalami kendala masuk ke akun.
+            Hubungi administrator sekolah jika Anda mengalami kendala masuk ke
+            akun.
           </p>
         </div>
       </div>

@@ -10,6 +10,7 @@ import {
 } from "../services/pegawaiService";
 import { getAllJabatan } from "../services/jabatanService";
 import { getAllMapel } from "../services/mapelService";
+import { index, find } from "../services/penggunaService";
 import Modal from "../components/ui/Modal";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
 import Pagination from "../components/ui/Pagination";
@@ -33,6 +34,7 @@ import {
   IconBriefcase,
   IconHeartPulse,
   IconUser,
+  IconShield,
 } from "../components/icons";
 
 const PER_PAGE = 10;
@@ -111,7 +113,7 @@ export default function Pengguna() {
     setLoading(true);
     setError("");
     try {
-      const data = await getPegawaiList({ page, per_page: PER_PAGE, search });
+      const data = await index();
       setItems(data.items || []);
       setPagination(data.pagination || null);
     } catch (err) {
@@ -162,23 +164,9 @@ export default function Pengguna() {
     setEditing(item);
     setForm({
       nama: item.nama || "",
-      nomor_ktp: item.nomor_ktp || "",
-      nomor_nbm: item.nomor_nbm || "",
-      tempat_lahir: item.tempat_lahir || "",
-      tanggal_lahir: item.tanggal_lahir ? item.tanggal_lahir.slice(0, 10) : "",
-      jenis_kelamin: item.jenis_kelamin || "L",
-      status: item.status || "Belum_Menikah",
-      alamat_rumah: item.alamat_rumah || "",
-      nomor_telephone: item.nomor_telephone || "",
-      alamat_email: item.alamat_email || "",
-      pendidikan_terakhir: item.pendidikan_terakhir || "",
-      nama_kampus: item.nama_kampus || "",
-      jurusan: item.jurusan || "",
-      tahun_lulus: item.tahun_lulus || "",
-      jabatan: item.jabatan?.id ?? item.jabatan ?? "",
-      mapel: item.mapel?.id ?? item.mapel ?? "",
-      nomor_bpjs: item.nomor_bpjs || "",
-      kontak_darurat: item.kontak_darurat || "",
+      role: item.role || "",
+      email: item.email || "",
+      whatsapp: item.whatsapp || "",
     });
     setFormErrors({});
     resetFotoState();
@@ -190,7 +178,7 @@ export default function Pengguna() {
     setDetailItem(item);
     setDetailLoading(true);
     try {
-      const fresh = await getPegawaiById(item.id);
+      const fresh = await find(item.id);
       setDetailItem(fresh);
     } catch {
       // Fallback: tetap tampilkan data ringkas yang sudah ada di list
@@ -353,46 +341,39 @@ export default function Pengguna() {
                 <thead>
                   <tr className="border-b border-slate-100 bg-slate-50/60 text-xs uppercase tracking-wide text-slate-400">
                     <th className="px-5 py-3 font-semibold">Nama</th>
-                    <th className="px-5 py-3 font-semibold">Jabatan</th>
-                    <th className="px-5 py-3 font-semibold">Mapel</th>
-                    <th className="px-5 py-3 font-semibold">Kontak</th>
+                    <th className="px-5 py-3 font-semibold">Role</th>
+                    <th className="px-5 py-3 font-semibold">Email</th>
+                    <th className="px-5 py-3 font-semibold">Whatsapp</th>
                     <th className="px-5 py-3 text-right font-semibold">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {items.map((p) => (
-                    <tr key={p.id} className="transition hover:bg-slate-50/70">
+                  {items.map((u) => (
+                    <tr key={u.id} className="transition hover:bg-slate-50/70">
                       <td className="px-5 py-3">
                         <button
-                          onClick={() => openDetail(p)}
+                          onClick={() => openDetail(u)}
                           className="flex items-center gap-3 text-left"
                         >
-                          <Avatar name={p.nama} src={p.foto?.path} size={36} />
+                          <Avatar name={u.nama} src={u.foto?.path} size={36} />
                           <div className="min-w-0">
                             <p className="truncate text-sm font-semibold text-slate-700 hover:text-brand-600">
-                              {p.nama}
-                            </p>
-                            <p className="truncate text-xs text-slate-400">
-                              {p.jenis_kelamin === "L"
-                                ? "Laki-laki"
-                                : "Perempuan"}
+                              {u.nama}
                             </p>
                           </div>
                         </button>
                       </td>
                       <td className="px-5 py-3 text-slate-600">
-                        {p.jabatan?.nama || "-"}
+                        {u.role || "-"}
                       </td>
                       <td className="px-5 py-3 text-slate-600">
-                        {p.mapel?.nama || "-"}
+                        {u.email || "-"}
                       </td>
-                      <td className="px-5 py-3 text-slate-600">
-                        {p.nomor_telephone}
-                      </td>
+                      <td className="px-5 py-3 text-slate-600">{u.whatsapp}</td>
                       <td className="px-5 py-3">
                         <div className="flex justify-end gap-1.5">
                           <button
-                            onClick={() => openDetail(p)}
+                            onClick={() => openDetail(u)}
                             className="rounded-lg p-2 text-slate-500 transition hover:bg-slate-100"
                             aria-label="Lihat detail"
                           >
@@ -401,14 +382,14 @@ export default function Pengguna() {
                           {isAdmin && (
                             <>
                               <button
-                                onClick={() => openEdit(p)}
+                                onClick={() => openEdit(u)}
                                 className="rounded-lg p-2 text-slate-500 transition hover:bg-brand-50 hover:text-brand-600"
                                 aria-label="Edit"
                               >
                                 <IconEdit size={16} />
                               </button>
                               <button
-                                onClick={() => setDeleteTarget(p)}
+                                onClick={() => setDeleteTarget(u)}
                                 className="rounded-lg p-2 text-slate-500 transition hover:bg-red-50 hover:text-red-600"
                                 aria-label="Hapus"
                               >
@@ -487,11 +468,7 @@ export default function Pengguna() {
 
           {/* Data Diri */}
           <FormSection icon={IconIdCard} title="Data Diri">
-            <Field
-              label="Nama Lengkap"
-              error={formErrors.nama}
-              className="sm:col-span-2"
-            >
+            <Field label="Nama Lengkap" error={formErrors.nama}>
               <input
                 type="text"
                 value={form.nama}
@@ -500,241 +477,37 @@ export default function Pengguna() {
                 placeholder="Nama lengkap pegawai"
               />
             </Field>
-            <Field label="Nomor KTP" error={formErrors.nomor_ktp}>
-              <input
-                type="text"
-                inputMode="numeric"
-                maxLength={16}
-                value={form.nomor_ktp}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    nomor_ktp: e.target.value.replace(/\D/g, ""),
-                  })
-                }
-                className={`input-field ${formErrors.nomor_ktp ? "input-error" : ""}`}
-                placeholder="16 digit NIK"
-              />
-            </Field>
-            <Field
-              label="Nomor NBM"
-              error={formErrors.nomor_nbm}
-              hint="Opsional"
-            >
-              <input
-                type="text"
-                value={form.nomor_nbm}
-                onChange={(e) =>
-                  setForm({ ...form, nomor_nbm: e.target.value })
-                }
-                className={`input-field ${formErrors.nomor_nbm ? "input-error" : ""}`}
-              />
-            </Field>
-            <Field label="Tempat Lahir" error={formErrors.tempat_lahir}>
-              <input
-                type="text"
-                value={form.tempat_lahir}
-                onChange={(e) =>
-                  setForm({ ...form, tempat_lahir: e.target.value })
-                }
-                className={`input-field ${formErrors.tempat_lahir ? "input-error" : ""}`}
-              />
-            </Field>
-            <Field label="Tanggal Lahir" error={formErrors.tanggal_lahir}>
-              <input
-                type="date"
-                value={form.tanggal_lahir}
-                onChange={(e) =>
-                  setForm({ ...form, tanggal_lahir: e.target.value })
-                }
-                className={`input-field ${formErrors.tanggal_lahir ? "input-error" : ""}`}
-              />
-            </Field>
-            <Field label="Jenis Kelamin">
+            <Field label="Peran" error={formErrors.role}>
               <select
-                value={form.jenis_kelamin}
-                onChange={(e) =>
-                  setForm({ ...form, jenis_kelamin: e.target.value })
-                }
-                className="input-field"
-              >
-                <option value="L">Laki-laki</option>
-                <option value="P">Perempuan</option>
-              </select>
-            </Field>
-            <Field label="Status Pernikahan">
-              <select
-                value={form.status}
-                onChange={(e) => setForm({ ...form, status: e.target.value })}
-                className="input-field"
-              >
-                {Object.entries(STATUS_LABEL).map(([val, label]) => (
-                  <option key={val} value={val}>
-                    {label}
-                  </option>
-                ))}
-              </select>
-            </Field>
-            <Field
-              label="Alamat Rumah"
-              error={formErrors.alamat_rumah}
-              className="sm:col-span-2"
-            >
-              <textarea
-                rows={2}
-                value={form.alamat_rumah}
-                onChange={(e) =>
-                  setForm({ ...form, alamat_rumah: e.target.value })
-                }
-                className={`input-field resize-none ${formErrors.alamat_rumah ? "input-error" : ""}`}
-                maxLength={150}
-              />
-            </Field>
-          </FormSection>
-
-          {/* Kontak */}
-          <FormSection icon={IconPhone} title="Kontak">
-            <Field label="Nomor Telepon/WA" error={formErrors.nomor_telephone}>
-              <input
-                type="text"
-                value={form.nomor_telephone}
-                onChange={(e) =>
-                  setForm({ ...form, nomor_telephone: e.target.value })
-                }
-                className={`input-field ${formErrors.nomor_telephone ? "input-error" : ""}`}
-                placeholder="081234567890"
-              />
-            </Field>
-            <Field
-              label="Kontak Darurat"
-              error={formErrors.kontak_darurat}
-              hint="Opsional"
-            >
-              <input
-                type="text"
-                value={form.kontak_darurat}
-                onChange={(e) =>
-                  setForm({ ...form, kontak_darurat: e.target.value })
-                }
-                className={`input-field ${formErrors.kontak_darurat ? "input-error" : ""}`}
-                placeholder="081234567890"
-              />
-            </Field>
-            <Field
-              label="Email"
-              error={formErrors.alamat_email}
-              hint="Opsional"
-              className="sm:col-span-2"
-            >
-              <input
-                type="email"
-                value={form.alamat_email}
-                onChange={(e) =>
-                  setForm({ ...form, alamat_email: e.target.value })
-                }
-                className={`input-field ${formErrors.alamat_email ? "input-error" : ""}`}
-                placeholder="nama@email.com"
-              />
-            </Field>
-          </FormSection>
-
-          {/* Pendidikan */}
-          <FormSection icon={IconGraduationCap} title="Pendidikan" optional>
-            <Field label="Pendidikan Terakhir" hint="Opsional">
-              <select
-                value={form.pendidikan_terakhir}
-                onChange={(e) =>
-                  setForm({ ...form, pendidikan_terakhir: e.target.value })
-                }
-                className="input-field"
-              >
-                <option value="">— Pilih —</option>
-                {PENDIDIKAN_OPTIONS.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
-            </Field>
-            <Field
-              label="Tahun Lulus"
-              error={formErrors.tahun_lulus}
-              hint="Opsional"
-            >
-              <input
-                type="number"
-                min={1970}
-                max={new Date().getFullYear()}
-                value={form.tahun_lulus}
-                onChange={(e) =>
-                  setForm({ ...form, tahun_lulus: e.target.value })
-                }
-                className={`input-field ${formErrors.tahun_lulus ? "input-error" : ""}`}
-              />
-            </Field>
-            <Field label="Nama Kampus/Sekolah" hint="Opsional">
-              <input
-                type="text"
-                value={form.nama_kampus}
-                onChange={(e) =>
-                  setForm({ ...form, nama_kampus: e.target.value })
-                }
-                className="input-field"
-              />
-            </Field>
-            <Field label="Jurusan" hint="Opsional">
-              <input
-                type="text"
-                value={form.jurusan}
-                onChange={(e) => setForm({ ...form, jurusan: e.target.value })}
-                className="input-field"
-              />
-            </Field>
-          </FormSection>
-
-          {/* Kepegawaian */}
-          <FormSection icon={IconBriefcase} title="Kepegawaian">
-            <Field label="Jabatan" error={formErrors.jabatan}>
-              <select
-                value={form.jabatan}
-                onChange={(e) => setForm({ ...form, jabatan: e.target.value })}
+                value={form.role}
+                onChange={(e) => setForm({ ...form, role: e.target.value })}
                 className={`input-field ${formErrors.jabatan ? "input-error" : ""}`}
               >
-                <option value="">— Pilih Jabatan —</option>
-                {jabatanOptions.map((j) => (
-                  <option key={j.id} value={j.id}>
-                    {j.nama}
-                  </option>
-                ))}
+                <option disabled>— Pilih Jabatan —</option>
+                <option key="user" value="user">
+                  User
+                </option>
+                <option key="admin" value="admin">
+                  Admin
+                </option>
               </select>
             </Field>
-            <Field label="Mata Pelajaran Diampu" hint="Opsional, khusus guru">
-              <select
-                value={form.mapel}
-                onChange={(e) => setForm({ ...form, mapel: e.target.value })}
-                className="input-field"
-              >
-                <option value="">— Tidak Ada —</option>
-                {mapelOptions.map((m) => (
-                  <option key={m.id} value={m.id}>
-                    {m.nama}
-                  </option>
-                ))}
-              </select>
-            </Field>
-            <Field
-              label="Nomor BPJS"
-              error={formErrors.nomor_bpjs}
-              hint="Opsional"
-              className="sm:col-span-2"
-            >
+            <Field label="Email" error={formErrors.email}>
               <input
                 type="text"
-                value={form.nomor_bpjs}
-                onChange={(e) =>
-                  setForm({ ...form, nomor_bpjs: e.target.value })
-                }
-                className={`input-field ${formErrors.nomor_bpjs ? "input-error" : ""}`}
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                className={`input-field ${formErrors.email ? "input-error" : ""}`}
+                placeholder="Alamata Email"
+              />
+            </Field>
+            <Field label="Whatsapp" error={formErrors.email}>
+              <input
+                type="text"
+                value={form.whatsapp}
+                onChange={(e) => setForm({ ...form, whatsapp: e.target.value })}
+                className={`input-field ${formErrors.whatsapp ? "input-error" : ""}`}
+                placeholder="Nomor Whatsapp"
               />
             </Field>
           </FormSection>
@@ -759,111 +532,60 @@ export default function Pengguna() {
       <Modal
         open={!!detailItem}
         onClose={() => setDetailItem(null)}
-        title="Detail Pengguna"
-        description={detailItem?.nama}
+        title={detailItem?.nama}
+        description={detailItem?.role}
         size="lg"
       >
         {detailItem && (
-          <div className="space-y-6">
-            <div className="flex items-center gap-4">
-              <Avatar
-                name={detailItem.nama}
-                src={detailItem.foto?.path}
-                size={64}
-              />
-              <div>
-                <h4 className="text-base font-bold text-slate-800">
-                  {detailItem.nama}
-                </h4>
-                <p className="text-sm text-slate-500">
-                  {detailItem.jabatan?.nama ||
-                    jabatanMap[detailItem.jabatan] ||
-                    "Tanpa jabatan"}
-                  {(detailItem.mapel?.nama || mapelMap[detailItem.mapel]) &&
-                    ` · ${detailItem.mapel?.nama || mapelMap[detailItem.mapel]}`}
-                </p>
-              </div>
-              {detailLoading && (
+          <div>
+            {/* <div className="flex items-center gap-4">
+              {detailLoading ? (
                 <IconLoader size={16} className="ml-auto text-slate-400" />
+              ) : (
+                <div>
+                  <Avatar
+                    name={detailItem.nama}
+                    src={detailItem.foto?.path}
+                    size={64}
+                  />
+                  <div>
+                    <h4 className="text-base font-bold text-slate-800">
+                      {detailItem.nama}
+                    </h4>
+                    <p className="text-sm text-slate-500">{detailItem.role}</p>
+                  </div>
+                </div>
               )}
-            </div>
-
+            </div> */}
             <DetailGrid
               items={[
                 {
                   icon: IconIdCard,
-                  label: "Nomor KTP",
-                  value: detailItem.nomor_ktp,
-                },
-                {
-                  icon: IconIdCard,
-                  label: "Nomor NBM",
-                  value: detailItem.nomor_nbm,
+                  label: "Id",
+                  value: detailItem.id,
                 },
                 {
                   icon: IconUser,
-                  label: "Jenis Kelamin",
-                  value:
-                    detailItem.jenis_kelamin === "L"
-                      ? "Laki-laki"
-                      : "Perempuan",
+                  label: "Nama Lengkap",
+                  value: detailItem.nama,
                 },
                 {
-                  icon: IconHeartPulse,
-                  label: "Status",
-                  value: STATUS_LABEL[detailItem.status],
-                },
-                {
-                  icon: IconCalendar,
-                  label: "Tempat, Tgl Lahir",
-                  value: `${detailItem.tempat_lahir}, ${formatDate(detailItem.tanggal_lahir)}`,
-                },
-                {
-                  icon: IconPhone,
-                  label: "Telepon",
-                  value: detailItem.nomor_telephone,
-                },
-                {
-                  icon: IconPhone,
-                  label: "Kontak Darurat",
-                  value: detailItem.kontak_darurat,
+                  icon: IconShield,
+                  label: "Peran",
+                  value: detailItem.role,
                 },
                 {
                   icon: IconMail,
                   label: "Email",
-                  value: detailItem.alamat_email,
+                  value: detailItem.email,
                 },
                 {
-                  icon: IconGraduationCap,
-                  label: "Pendidikan Terakhir",
-                  value: detailItem.pendidikan_terakhir,
-                },
-                {
-                  icon: IconGraduationCap,
-                  label: "Kampus / Jurusan",
-                  value: [detailItem.nama_kampus, detailItem.jurusan]
-                    .filter(Boolean)
-                    .join(" - "),
-                },
-                {
-                  icon: IconCalendar,
-                  label: "Tahun Lulus",
-                  value: detailItem.tahun_lulus,
-                },
-                {
-                  icon: IconHeartPulse,
-                  label: "Nomor BPJS",
-                  value: detailItem.nomor_bpjs,
+                  icon: IconPhone,
+                  label: "Whatsapp",
+                  value: detailItem.whatsapp,
                 },
               ]}
             />
-
-            <div>
-              <p className="field-label">Alamat Rumah</p>
-              <p className="text-sm text-slate-700">
-                {detailItem.alamat_rumah || "-"}
-              </p>
-            </div>
           </div>
         )}
       </Modal>
@@ -943,4 +665,15 @@ function formatDate(dateStr) {
   } catch {
     return dateStr;
   }
+}
+
+function ProfileField({ label, children }) {
+  return (
+    <div className="grid gap-1.5 py-4 sm:grid-cols-[140px_minmax(0,1fr)] sm:gap-5">
+      <dt className="text-sm text-slate-500">{label}</dt>
+      <dd className="min-w-0 break-words text-sm font-semibold text-slate-700">
+        {children}
+      </dd>
+    </div>
+  );
 }
