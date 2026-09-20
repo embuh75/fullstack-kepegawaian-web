@@ -19,7 +19,7 @@ class MapelController
         RoleMiddleware::isAdmin($user);
 
         // Validasi input
-        $data = json_decode(file_get_contents('php://input'),true) ?? [];
+        $data = json_decode(file_get_contents('php://input'), true) ?? [];
         $validator = new MapelValidator()->create($data);
 
         if ($validator->fails()) {
@@ -30,7 +30,7 @@ class MapelController
 
         $mapel = MapelModel::create($dataValidated);
 
-        Response::success($mapel, 'Data mapel berhasil ditambahkan.');
+        Response::success($data, 'Data mapel berhasil ditambahkan.');
     }
 
     /**
@@ -90,7 +90,7 @@ class MapelController
         if (!$model) Response::error('Data mapel tidak ditemukan.', null, 404);
 
         // validasi
-        $data = json_decode(file_get_contents('php://input'),true) ?? [];
+        $data = json_decode(file_get_contents('php://input'), true) ?? [];
         $validator = new MapelValidator()->update($data, $id);
 
         if ($validator->fails()) {

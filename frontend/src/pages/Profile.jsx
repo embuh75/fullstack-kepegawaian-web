@@ -95,7 +95,7 @@ export default function Profile() {
     e.preventDefault();
     if (saving) return;
 
-    if (profile?.id == null) {
+    if (profile?.id === null) {
       toast.error("ID pengguna tidak tersedia.");
       return;
     }

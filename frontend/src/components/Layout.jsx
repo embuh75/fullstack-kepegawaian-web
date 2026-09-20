@@ -14,7 +14,6 @@ import {
   IconBriefcase,
   IconBook,
   IconUsers,
-  IconUser,
   IconLogout,
   IconMenu,
   IconX,
@@ -200,9 +199,7 @@ function SidebarContent({ user, onLogout, onNavigate }) {
               <p className="truncate text-sm font-semibold text-slate-700">
                 {user?.nama}
               </p>
-              <p className="truncate text-xs text-green-700">
-                {user?.role}
-              </p>
+              <p className="truncate text-xs text-green-700">{user?.role}</p>
               <p className="truncate text-xs lowercase text-blue-700">
                 {user?.email}
               </p>

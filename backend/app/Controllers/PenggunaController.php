@@ -14,7 +14,7 @@ use App\Helpers\RakitValidator\AuthValidator;
 use App\Models\PenggunaModel;
 use App\Helpers\Upload;
 
-class UserController
+class PenggunaController
 {
     /**
      * POST /api/auth/register

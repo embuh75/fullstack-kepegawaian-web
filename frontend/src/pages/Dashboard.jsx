@@ -11,7 +11,6 @@ import {
   IconBriefcase,
   IconBook,
   IconGraduationCap,
-  IconPlus,
   IconLoader,
   IconUser,
 } from "../components/icons";
@@ -25,7 +24,6 @@ const STAT_STYLES = [
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const isAdmin = user?.role === "admin";
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");

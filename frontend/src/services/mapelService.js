@@ -18,9 +18,11 @@ export async function getMapelById(id) {
 // application/x-www-form-urlencoded (PHP baru mengisi $_POST kalau begitu),
 // bukan JSON.
 export async function createMapel(payload) {
-  const body = new URLSearchParams(payload);
-  const res = await api.post("/mapel", body);
+  // const body = new URLSearchParams(payload);
+  const res = await api.post("/mapel", payload);
   return res.data.data;
+
+  // console.log("CreateMapel: ", payload);
 }
 
 export async function updateMapel(id, payload) {

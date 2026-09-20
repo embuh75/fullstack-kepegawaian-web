@@ -65,6 +65,7 @@ class PegawaiController
             });
         }
 
+        // paginasi
         $pagination = $query->paginate($per_page, ['*'], 'page', $page);
 
         $items = array_map(function ($item) {
@@ -77,6 +78,7 @@ class PegawaiController
             return $item;
         }, $pagination->items());
 
+        // respon
         $pegawais = [
             'items' => $items,
             'pagination' => [

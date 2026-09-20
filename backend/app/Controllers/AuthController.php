@@ -21,7 +21,6 @@ class AuthController
     public function login(): void
     {
         $data = json_decode(file_get_contents('php://input'), true) ?? [];
-        // $data = $_POST;
 
         // Validasi input
         $validator = new AuthValidator()->login($data);
@@ -90,23 +89,30 @@ class AuthController
             'role'  => $pengguna['role']
         ]);
 
-        Response::success([
+        $user = [
             'token' => $token,
             'user'  => [
-                'id'           => $pengguna['id'],
-                'nama'         => $pengguna['nama'],
+                'id' => $pengguna['id'],
+                'nama' => $pengguna['nama'],
                 'foto' => $pengguna['foto'] ?
                     [
                         'fileName' => $pengguna['foto'],
                         'path' => $_ENV['APP_URL'] . '/uploads/pengguna/' . $pengguna['foto']
                     ] : null,
-                'email'        => $pengguna['email'],
-                'role'         => $pengguna['role'],
+                'email' => $pengguna['email'],
+                'whatsapp' => $pengguna['whatsapp'],
+                'role' => $pengguna['role'],
                 'status_aktif' => $pengguna['status_aktif']
             ]
-        ], 'Login berhasil.');
+        ];
+
+        Response::success($user, 'Login berhasil.');
     }
 
+    /**
+     * GET /api/auth/me
+     * Cek user yang sedang aktif
+     */
     public function me(): void
     {
         try {

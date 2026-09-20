@@ -1,5 +1,4 @@
 import { createContext, useContext, useCallback, useState } from "react";
-import { store, index, find, update, destroy } from "../services/penggunaService";
 
 const PenggunaContext = createContext(null);
 
