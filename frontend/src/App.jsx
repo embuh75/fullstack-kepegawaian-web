@@ -3,9 +3,11 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { ToastProvider } from "./context/ToastContext";
 
+// components
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
 
+// pages
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Jabatan from "./pages/Jabatan";

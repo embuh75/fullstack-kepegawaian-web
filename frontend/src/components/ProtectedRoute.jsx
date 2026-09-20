@@ -1,15 +1,15 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useMe } from "../lib/query/useAuthQuery";
 import Loading from "./ui/Loading";
 
 export default function ProtectedRoute() {
-  const { isAuthenticated, loading } = useAuth();
+  const { user, isLoading, isError } = useMe();
 
-  if (loading) {
+  if (isLoading) {
     return <Loading />;
   }
 
-  if (!isAuthenticated) {
+  if (isError || !user) {
     return <Navigate to="/login" replace />;
   }
 

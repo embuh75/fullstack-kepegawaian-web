@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useLogin } from "../lib/query/useAuthQuery";
 
 import {
   IconShield,
@@ -12,56 +12,22 @@ import {
   IconBriefcase,
   IconBook,
 } from "../components/icons";
-import Loading from "../components/ui/Loading";
 
 export default function Login() {
-  const { login, loading: loadingUser, isAuthenticated } = useAuth();
+  const { login, isPending, isError, error } = useLogin();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  if (loadingUser) {
-    return <Loading />;
-  }
-
-  if (isAuthenticated) {
-    navigate("/dashboard", { replace: true });
-  }
-
-  async function handleSubmit(e) {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!e.currentTarget.checkValidity()) {
-      e.currentTarget.reportValidity();
-      return;
-    }
-
-    setError("");
-    setLoading(true);
-    try {
-      await login(email.trim(), password);
-      navigate("/dashboard");
-    } catch (err) {
-      if (err.code === "ECONNABORTED") {
-        setError("Server terlalu lama merespons. Coba lagi.");
-      } else if (!err.response) {
-        setError(
-          "Tidak dapat terhubung ke server. Periksa koneksi backend Anda.",
-        );
-      } else {
-        setError(
-          err.response?.data?.message ||
-            "Login gagal. Periksa email dan password Anda.",
-        );
-      }
-    } finally {
-      setLoading(false);
-    }
-  }
+    const data = { email, password };
+    await login(data);
+    navigate("/dashboard", { replace: true });
+  };
 
   return (
     <div className="flex min-h-screen bg-slate-50">
@@ -144,10 +110,22 @@ export default function Login() {
           </p>
 
           <form onSubmit={handleSubmit} className="mt-8 space-y-4" noValidate>
-            {error && (
-              <div className="flex items-start gap-2.5 rounded-lg border border-red-200 bg-red-50 px-3.5 py-3 text-sm text-red-700">
-                <IconAlertTriangle size={17} className="mt-0.5 shrink-0" />
-                <span>{error}</span>
+            {isError && (
+              <div className="flex flex-col gap-2 rounded-lg border border-red-200 bg-red-50 px-3.5 py-3 text-sm text-red-700">
+                <div className="flex items-center gap-2 font-semibold">
+                  <IconAlertTriangle size={17} className="shrink-0" />
+                  <span>Validasi Gagal</span>
+                </div>
+
+                <ul className="ml-7 flex flex-col gap-1 list-disc opacity-90">
+                  {!error.response?.data?.errors ? (
+                    <li>{error.response?.data?.message}</li>
+                  ) : (
+                    Object.values(error.response?.data?.errors).map(
+                      (err, index) => <li key={index}>{err}</li>,
+                    )
+                  )}
+                </ul>
               </div>
             )}
 
@@ -195,11 +173,11 @@ export default function Login() {
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={isPending}
               className="btn-primary w-full !py-3"
             >
-              {loading && <IconLoader size={16} />}
-              {loading ? "Memproses..." : "Masuk"}
+              {isPending && <IconLoader size={16} />}
+              {isPending ? "Memproses..." : "Masuk"}
             </button>
           </form>
 

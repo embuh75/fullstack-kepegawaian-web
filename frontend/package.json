@@ -12,6 +12,7 @@
     "lint:fix": "oxlint --fix"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.103.1",
     "axios": "^1.7.7",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
