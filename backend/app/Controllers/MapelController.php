@@ -19,8 +19,8 @@ class MapelController
         RoleMiddleware::isAdmin($user);
 
         // Validasi input
-        $data = json_decode(file_get_contents('php://input'),true) ?? [];
-        $validator = new MapelValidator()->create($data);
+        // $data = json_decode(file_get_contents('php://input'),true) ?? [];
+        $validator = new MapelValidator()->create($_POST);
 
         if ($validator->fails()) {
             Response::error('Validasi gagal.', $validator->errors()->firstOfAll());

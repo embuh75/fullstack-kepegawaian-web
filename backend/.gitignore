@@ -23,6 +23,7 @@ public/uploads/galeri/*
 public/uploads/testimoni/*
 !public/uploads/testimoni/.gitkeep
 public/uploads/pengguna/*
+!public/uploads/pengguna/IMG_6ab25c708cbd1_20260922054608.gif
 
 # Logs
 *.log
