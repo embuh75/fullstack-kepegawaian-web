@@ -223,6 +223,9 @@ export default function Profile() {
               <ProfileField label="Alamat Email">
                 {profile.email || "Belum tersedia"}
               </ProfileField>
+              <ProfileField label="Nomor Whatsapp">
+                {profile.whatsapp || "Belum tersedia"}
+              </ProfileField>
               <ProfileField label="Peran">
                 <span className="capitalize">
                   {profile.role || "Belum tersedia"}
@@ -365,7 +368,7 @@ export default function Profile() {
                 </div>
 
                 {/* Role */}
-                <div>
+                {/* <div>
                   <label htmlFor="profile-role" className="field-label">
                     Peran
                   </label>
@@ -378,7 +381,7 @@ export default function Profile() {
                     <option value="admin">Admin</option>
                     <option value="user">User</option>
                   </select>
-                </div>
+                </div> */}
 
                 {/* Password */}
                 <div>

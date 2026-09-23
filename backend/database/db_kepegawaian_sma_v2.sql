@@ -138,9 +138,10 @@ CREATE TABLE IF NOT EXISTS `pengguna` (
 -- ============================================
 -- Seed: Default Admin Account
 -- ============================================
-INSERT INTO `pengguna` (`nama`, `email`, `whatsapp`, `password`, `role`)
+INSERT INTO `pengguna` (`nama`, `foto`, `email`, `whatsapp`, `password`, `role`)
 VALUES (
   'Admin',
+  'IMG_6ab25c708cbd1_20260922054608.gif',
   'admin@email.com',
   '08123456789',
   '$2y$10$OeOySJqnrqShFOY5JotWk.CoNvbuK8fHzv1/.GvPZU9bZDK3S.wpq',
